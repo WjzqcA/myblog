@@ -57,8 +57,9 @@ sudo nano /etc/nginx/sites-available/blog.zjanson.top
 server {
     listen 80;
     server_name blog.zjanson.top;
-
-    root /var/www/myblog;  # 博客目录，务必写绝对路径,注意不要放到root下
+	# 博客目录，务必写绝对路径,注意不要放到root下
+	# /home/blog_ci/myblog/public这个是后续的本地git仓库
+    root /home/blog_ci/myblog/public;  
     index index.html;
 
     location / {
@@ -118,7 +119,7 @@ hexo g
 
 ## 3.2实现自动部署（git+CI）
 
-目标：当在本地写完文章并 git push 到远程仓库后，服务器能自动更新 Hexo 生成的静态文件，并通过 Nginx 提供最新页面。
+思路：当在本地写完文章并 git push 到远程仓库后，github能通过webhook自动向服务器仓库发送请求，通过服务器编写好的请求接收器执行sh脚本，在sh脚本中会同步远程仓库的内容到本地仓库，在同步到 Nginx 访问的路径中以提供最新页面。
 
 核心原理：
 
@@ -204,9 +205,6 @@ cd /home/blog_ci/myblog
 # 强制同步远程 dist 分支
 git fetch origin
 git reset --hard origin/dist
-
-# 直接同步 public 文件（这里 dist 分支本身就是静态文件）
-rsync -av --delete ./ /var/www/myblog/
 
 echo "博客更新完成：$(date)"
 ```
