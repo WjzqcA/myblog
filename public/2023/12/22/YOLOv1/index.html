@@ -1,0 +1,715 @@
+
+
+<!DOCTYPE html>
+<html lang="zh-CN" data-default-color-scheme=auto>
+
+
+
+<head>
+  <meta charset="UTF-8">
+
+  <link rel="apple-touch-icon" sizes="76x76" href="/img/fluid.png">
+  <link rel="icon" href="/img/fluid.png">
+  
+
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=5.0, shrink-to-fit=no">
+  <meta http-equiv="x-ua-compatible" content="ie=edge">
+  
+  <meta name="theme-color" content="#2f4154">
+  <meta name="author" content="Wjzqc">
+  <meta name="keywords" content="">
+  
+    <meta name="description" content="YOLOv1 是一种开创性的目标检测算法，以其高效性和实时性著称。它将图像划分为网格，直接预测边界框和类别概率，采用统一的端到端网络结构，显著提升了检测速度，适合实时应用场景。相较于传统方法，YOLOv1 简化了检测流程，减少了计算复杂度，同时保持较高的准确性。">
+<meta property="og:type" content="article">
+<meta property="og:title" content="YOLOv1">
+<meta property="og:url" content="http://example.com/2023/12/22/YOLOv1/index.html">
+<meta property="og:site_name" content="Wjzqc&#39;s Blog">
+<meta property="og:description" content="YOLOv1 是一种开创性的目标检测算法，以其高效性和实时性著称。它将图像划分为网格，直接预测边界框和类别概率，采用统一的端到端网络结构，显著提升了检测速度，适合实时应用场景。相较于传统方法，YOLOv1 简化了检测流程，减少了计算复杂度，同时保持较高的准确性。">
+<meta property="og:locale" content="zh_CN">
+<meta property="og:image" content="http://example.com/image/YOLOv1/img1.png">
+<meta property="og:image" content="http://example.com/image/YOLOv1/img2.png">
+<meta property="og:image" content="http://example.com/image/YOLOv1/img3.png">
+<meta property="og:image" content="http://example.com/image/YOLOv1/img4.png">
+<meta property="og:image" content="http://example.com/image/YOLOv1/img5.png">
+<meta property="og:image" content="http://example.com/image/YOLOv1/img6.png">
+<meta property="og:image" content="http://example.com/image/YOLOv1/img7.png">
+<meta property="og:image" content="http://example.com/image/YOLOv1/img8.png">
+<meta property="og:image" content="http://example.com/image/YOLOv1/img9.png">
+<meta property="og:image" content="http://example.com/image/YOLOv1/img10.png">
+<meta property="og:image" content="http://example.com/image/YOLOv1/img11.png">
+<meta property="og:image" content="http://example.com/image/YOLOv1/img12.png">
+<meta property="og:image" content="http://example.com/image/YOLOv1/img13.png">
+<meta property="article:published_time" content="2023-12-22T03:35:38.000Z">
+<meta property="article:modified_time" content="2025-09-12T03:54:58.000Z">
+<meta property="article:author" content="Wjzqc">
+<meta property="article:tag" content="目标检测">
+<meta property="article:tag" content="YOLO">
+<meta name="twitter:card" content="summary_large_image">
+<meta name="twitter:image" content="http://example.com/image/YOLOv1/img1.png">
+  
+  
+  
+  <title>YOLOv1 - Wjzqc&#39;s Blog</title>
+
+  <link  rel="stylesheet" href="https://lib.baomitu.com/twitter-bootstrap/4.6.1/css/bootstrap.min.css" />
+
+
+
+  <link  rel="stylesheet" href="https://lib.baomitu.com/github-markdown-css/4.0.0/github-markdown.min.css" />
+
+  <link  rel="stylesheet" href="https://lib.baomitu.com/hint.css/2.7.0/hint.min.css" />
+
+  <link  rel="stylesheet" href="https://lib.baomitu.com/fancybox/3.5.7/jquery.fancybox.min.css" />
+
+
+
+<!-- 主题依赖的图标库，不要自行修改 -->
+<!-- Do not modify the link that theme dependent icons -->
+
+<link rel="stylesheet" href="//at.alicdn.com/t/c/font_1749284_5i9bdhy70f8.css">
+
+
+
+<link rel="stylesheet" href="//at.alicdn.com/t/c/font_1736178_k526ubmyhba.css">
+
+
+<link  rel="stylesheet" href="/css/main.css" />
+
+
+  <link id="highlight-css" rel="stylesheet" href="/css/highlight.css" />
+  
+    <link id="highlight-css-dark" rel="stylesheet" href="/css/highlight-dark.css" />
+  
+
+
+
+
+  <script id="fluid-configs">
+    var Fluid = window.Fluid || {};
+    Fluid.ctx = Object.assign({}, Fluid.ctx)
+    var CONFIG = {"hostname":"example.com","root":"/","version":"1.9.8","typing":{"enable":true,"typeSpeed":70,"cursorChar":"_","loop":false,"scope":[]},"anchorjs":{"enable":true,"element":"h1,h2,h3,h4,h5,h6","placement":"left","visible":"hover","icon":""},"progressbar":{"enable":true,"height_px":3,"color":"#29d","options":{"showSpinner":false,"trickleSpeed":100}},"code_language":{"enable":true,"default":"TEXT"},"copy_btn":true,"image_caption":{"enable":true},"image_zoom":{"enable":true,"img_url_replace":["",""]},"toc":{"enable":true,"placement":"right","headingSelector":"h1,h2,h3,h4,h5,h6","collapseDepth":0},"lazyload":{"enable":true,"loading_img":"/img/loading.gif","onlypost":false,"offset_factor":2},"web_analytics":{"enable":false,"follow_dnt":true,"baidu":null,"google":{"measurement_id":null},"tencent":{"sid":null,"cid":null},"leancloud":{"app_id":null,"app_key":null,"server_url":null,"path":"window.location.pathname","ignore_local":false},"umami":{"src":null,"website_id":null,"domains":null,"start_time":"2024-01-01T00:00:00.000Z","token":null,"api_server":null}},"search_path":"/local-search.xml","include_content_in_search":true};
+
+    if (CONFIG.web_analytics.follow_dnt) {
+      var dntVal = navigator.doNotTrack || window.doNotTrack || navigator.msDoNotTrack;
+      Fluid.ctx.dnt = dntVal && (dntVal.startsWith('1') || dntVal.startsWith('yes') || dntVal.startsWith('on'));
+    }
+  </script>
+  <script  src="/js/utils.js" ></script>
+  <script  src="/js/color-schema.js" ></script>
+  
+
+
+  
+<meta name="generator" content="Hexo 7.3.0"></head>
+
+
+<body>
+  
+
+  <header>
+    
+
+<div class="header-inner" style="height: 70vh;">
+  <nav id="navbar" class="navbar fixed-top  navbar-expand-lg navbar-dark scrolling-navbar">
+  <div class="container">
+    <a class="navbar-brand" href="/">
+      <strong>Wjzqc</strong>
+    </a>
+
+    <button id="navbar-toggler-btn" class="navbar-toggler" type="button" data-toggle="collapse"
+            data-target="#navbarSupportedContent"
+            aria-controls="navbarSupportedContent" aria-expanded="false" aria-label="Toggle navigation">
+      <div class="animated-icon"><span></span><span></span><span></span></div>
+    </button>
+
+    <!-- Collapsible content -->
+    <div class="collapse navbar-collapse" id="navbarSupportedContent">
+      <ul class="navbar-nav ml-auto text-center">
+        
+          
+          
+          
+          
+            <li class="nav-item">
+              <a class="nav-link" href="/" target="_self">
+                <i class="iconfont icon-home-fill"></i>
+                <span>首页</span>
+              </a>
+            </li>
+          
+        
+          
+          
+          
+          
+            <li class="nav-item">
+              <a class="nav-link" href="/archives/" target="_self">
+                <i class="iconfont icon-archive-fill"></i>
+                <span>归档</span>
+              </a>
+            </li>
+          
+        
+          
+          
+          
+          
+            <li class="nav-item">
+              <a class="nav-link" href="/categories/" target="_self">
+                <i class="iconfont icon-category-fill"></i>
+                <span>分类</span>
+              </a>
+            </li>
+          
+        
+          
+          
+          
+          
+            <li class="nav-item">
+              <a class="nav-link" href="/tags/" target="_self">
+                <i class="iconfont icon-tags-fill"></i>
+                <span>标签</span>
+              </a>
+            </li>
+          
+        
+          
+          
+          
+          
+            <li class="nav-item">
+              <a class="nav-link" href="/about/" target="_self">
+                <i class="iconfont icon-user-fill"></i>
+                <span>关于</span>
+              </a>
+            </li>
+          
+        
+        
+          <li class="nav-item" id="search-btn">
+            <a class="nav-link" target="_self" href="javascript:;" data-toggle="modal" data-target="#modalSearch" aria-label="Search">
+              <i class="iconfont icon-search"></i>
+            </a>
+          </li>
+          
+        
+        
+          <li class="nav-item" id="color-toggle-btn">
+            <a class="nav-link" target="_self" href="javascript:;" aria-label="Color Toggle">
+              <i class="iconfont icon-dark" id="color-toggle-icon"></i>
+            </a>
+          </li>
+        
+      </ul>
+    </div>
+  </div>
+</nav>
+
+  
+
+<div id="banner" class="banner" parallax=true
+     style="background: url('/img/default.png') no-repeat center center; background-size: cover;">
+  <div class="full-bg-img">
+    <div class="mask flex-center" style="background-color: rgba(0, 0, 0, 0.3)">
+      <div class="banner-text text-center fade-in-up">
+        <div class="h2">
+          
+            <span id="subtitle" data-typed-text="YOLOv1"></span>
+          
+        </div>
+
+        
+          
+  <div class="mt-3">
+    
+    
+      <span class="post-meta">
+        <i class="iconfont icon-date-fill" aria-hidden="true"></i>
+        <time datetime="2023-12-22 11:35" pubdate>
+          2023年12月22日 中午
+        </time>
+      </span>
+    
+  </div>
+
+  <div class="mt-1">
+    
+      <span class="post-meta mr-2">
+        <i class="iconfont icon-chart"></i>
+        
+          1.5k 字
+        
+      </span>
+    
+
+    
+      <span class="post-meta mr-2">
+        <i class="iconfont icon-clock-fill"></i>
+        
+        
+        
+          13 分钟
+        
+      </span>
+    
+
+    
+    
+  </div>
+
+
+        
+      </div>
+
+      
+    </div>
+  </div>
+</div>
+
+</div>
+
+  </header>
+
+  <main>
+    
+      
+
+<div class="container-fluid nopadding-x">
+  <div class="row nomargin-x">
+    <div class="side-col d-none d-lg-block col-lg-2">
+      
+
+    </div>
+
+    <div class="col-lg-8 nopadding-x-md">
+      <div class="container nopadding-x-md" id="board-ctn">
+        <div id="board">
+          <article class="post-content mx-auto">
+            <h1 id="seo-header">YOLOv1</h1>
+            
+            
+              <div class="markdown-body">
+                
+                <h1 id="YOLOv1"><a href="#YOLOv1" class="headerlink" title="YOLOv1"></a>YOLOv1</h1><h2 id="一、输入图像预测"><a href="#一、输入图像预测" class="headerlink" title="一、输入图像预测"></a>一、输入图像预测</h2><p>YOLOv1 的输入图片维度是固定的，通常为 448x448 像素。</p>
+<p>输入图像经过一系列卷积和池化操作后，会逐渐被转换成一个固定大小的张量。</p>
+<p>（图片中confidence应该放在第五位和第十位）</p>
+<p><img src="/image/YOLOv1/img1.png" srcset="/img/loading.gif" lazyload></p>
+<h3 id="grid-ceil及参数"><a href="#grid-ceil及参数" class="headerlink" title="grid ceil及参数"></a>grid ceil及参数</h3><p><img src="/image/YOLOv1/img2.png" srcset="/img/loading.gif" lazyload></p>
+<p>7<em>7的含义是将图片分成7</em>7个grid ceil，每一个grid ceil的一行就代表这个grid ceil预测的bbox信息。每个grid ceil要预测B个bouding box（并没有预先生成边界框，最终只会保留一个），总共有B*5+20(B是每个grid ceil的bbox的个数，x，y，w，h，confidence，20是类别得分)个参数。</p>
+<p>x，y，w，h均为相对值，x和y的值是介于0-1之间的，<strong>表示bbox的坐标中心相对于grid ceil左上角的相对位置</strong>（这里的xy是直接对边界框的坐标进行预测称为anchor-free，yolov2中是每个grid ceil生成五个anchor，再对anchor进行偏移缩放，称为anchor-base）。confidence代表目标边框包含预测目标的概率，当其中一个confidence大于某一个阈值时，才会作为预测类别。</p>
+<h2 id="二、将GT转换为对应的张量形式"><a href="#二、将GT转换为对应的张量形式" class="headerlink" title="二、将GT转换为对应的张量形式"></a>二、将GT转换为对应的张量形式</h2><p><img src="/image/YOLOv1/img3.png" srcset="/img/loading.gif" lazyload></p>
+<p>将图像划分为固定数量的网格，即SxS个grid ceil，对于每个ground truth边界框，确定其属于哪个网格，这通常通过计算边界框中心点在哪个grid ceil来完成，如果此grid ceil有边界框，那么confidence为1否则为0。</p>
+<h3 id="2-1-真实边框是如何对应到相应的grid上？"><a href="#2-1-真实边框是如何对应到相应的grid上？" class="headerlink" title="2.1 真实边框是如何对应到相应的grid上？"></a>2.1 真实边框是如何对应到相应的grid上？</h3><p>首先初始化一个全零的S<em>S</em>(5<em>B+20)的全零张量，计算GT所有边界框归一化后的中心点坐标(中心点坐标&#x2F;图片原图尺寸)，再将归一化的中心点坐标</em>S就能得到边界框的中心点在哪个grid ceil(中心点坐标&#x2F;&#x2F;图片原图尺寸 * S)，如果为小数那就进行下采样，之后将边界框的类别和前景概率填入到全零张量中。</p>
+<h3 id="2-2-真实边框的xywh如何确定？"><a href="#2-2-真实边框的xywh如何确定？" class="headerlink" title="2.2 真实边框的xywh如何确定？"></a>2.2 真实边框的xywh如何确定？</h3><p>整个图片的左上角为(0,0)，右下角为(1,1)，grid的相对坐标计算(i&#x2F;S)，xy由目标边框归一化的中心点坐标减去grid的相对坐标（相对于所在grid ceil左上角的坐标）。wh也是计算相对宽高</p>
+<h2 id="三、损失函数的计算"><a href="#三、损失函数的计算" class="headerlink" title="三、损失函数的计算"></a>三、损失函数的计算</h2><p><img src="/image/YOLOv1/img4.png" srcset="/img/loading.gif" lazyload></p>
+<p>总共有五个损失函数的计算：</p>
+<ol>
+<li>目标边框包含目标情况下的边框损失</li>
+</ol>
+<p><img src="/image/YOLOv1/img5.png" srcset="/img/loading.gif" lazyload></p>
+<p>因为当偏移相同时，小边界框相较于大边界框的误差应该更大。</p>
+<p><img src="/image/YOLOv1/img6.png" srcset="/img/loading.gif" lazyload></p>
+<p>对长宽开根号有助于更平衡地对边界框的坐标进行建模，使得较小的误差更容易被优化，同时防止较大的误差对训练产生过度影响。</p>
+<p><img src="/image/YOLOv1/img7.png" srcset="/img/loading.gif" lazyload></p>
+<ol start="2">
+<li>目标边框包含目标情况下前景概率损失计算(即正样本)</li>
+</ol>
+<p><img src="/image/YOLOv1/img8.png" srcset="/img/loading.gif" lazyload></p>
+<p>如果生成的边框包含目标，L设为1，表示预测概率为ci，真实概率为1</p>
+<p><img src="/image/YOLOv1/img9.png" srcset="/img/loading.gif" lazyload></p>
+<ol start="3">
+<li>目标边框没有包含目标情况下的损失计算，只计算背景概率损失(即负样本)</li>
+</ol>
+<p><img src="/image/YOLOv1/img10.png" srcset="/img/loading.gif" lazyload></p>
+<p>如果生成的边框不包含目标，L设为1，表示预测概率为ci但是真实概率为0</p>
+<p><img src="/image/YOLOv1/img11.png" srcset="/img/loading.gif" lazyload></p>
+<ol start="4">
+<li>目标边框包含目标情况SwiftKey: 目标边框包含目标情况下的类别预测损失</li>
+</ol>
+<p>只有目标中心点落入的网格才会参与类别loss的计算</p>
+<p><img src="/image/YOLOv1/img12.png" srcset="/img/loading.gif" lazyload></p>
+<h2 id="四、非极大值抑制"><a href="#四、非极大值抑制" class="headerlink" title="四、非极大值抑制"></a>四、非极大值抑制</h2><p>对于<strong>测试阶段</strong>采用非极大值抑制，对于每个grid ceil，YOLOv1会生成多个边界框，并为每个边界框分配一个置信度（confidence）分数，表示该边界框中包含物体的概率。首先，会对这些边界框进行筛选，只保留置信度高于设定阈值的边界框。</p>
+<p>保留了置信度高于阈值的边界框之后，NMS被用来进一步减少冗余的检测框。该步骤的目的是消除高度重叠的边界框，仅保留其中置信度最高的边界框。这样可以确保每个物体只被检测到一次，避免多个高度重叠的边界框导致冗余的检测结果。</p>
+<ol>
+<li><strong>输入：</strong> NMS的输入是一系列边界框（bounding boxes），每个边界框都与一个置信度分数相关联，表示该边界框中包含目标的概率。通常，这些边界框是由目标检测模型生成的。</li>
+<li><strong>按照置信度排序：</strong> 首先，按照每个边界框的置信度分数进行降序排序，将置信度最高的边界框排在前面。</li>
+<li><strong>选择置信度最高的边界框：</strong> 选择列表中置信度最高的边界框，将其添加到最终的输出列表中，表示这个边界框是最终选择的目标。</li>
+<li><strong>计算重叠度：</strong> 对于剩余的边界框，计算它们与已选择的边界框的重叠程度。这通常使用IoU（交并比）进行计算。IoU是指两个边界框的交集面积除以它们的并集面积。</li>
+<li><strong>移除重叠较大的边界框：</strong> 对于剩余的边界框，如果它们与已选择的边界框的IoU超过预定义的阈值（通常是0.5），则将它们从列表中移除，因为它们与已选择的边界框过于相似。</li>
+<li><strong>重复步骤3至5：</strong> 重复这个过程，选择下一个置信度最高的边界框，计算重叠度并移除重叠较大的边界框，直到所有边界框都被处理。</li>
+<li><strong>输出：</strong> 最终，输出的列表包含经过NMS处理后被选择的边界框，每个边界框都有一个关联的置信度分</li>
+</ol>
+<h2 id="五、网络结构"><a href="#五、网络结构" class="headerlink" title="五、网络结构"></a>五、网络结构</h2><p><img src="/image/YOLOv1/img13.png" srcset="/img/loading.gif" lazyload></p>
+<p>最后有两个全连接层，最后一个全连接层获得输出然后再reshape成7<em>7</em>30的张量获得结果。</p>
+
+                
+              </div>
+            
+            <hr/>
+            <div>
+              <div class="post-metas my-3">
+  
+    <div class="post-meta mr-3 d-flex align-items-center">
+      <i class="iconfont icon-category"></i>
+      
+
+<span class="category-chains">
+  
+  
+    
+      <span class="category-chain">
+        
+  <a href="/categories/%E6%B7%B1%E5%BA%A6%E5%AD%A6%E4%B9%A0/" class="category-chain-item">深度学习</a>
+  
+  
+
+      </span>
+    
+  
+</span>
+
+    </div>
+  
+  
+    <div class="post-meta">
+      <i class="iconfont icon-tags"></i>
+      
+        <a href="/tags/%E7%9B%AE%E6%A0%87%E6%A3%80%E6%B5%8B/" class="print-no-link">#目标检测</a>
+      
+        <a href="/tags/YOLO/" class="print-no-link">#YOLO</a>
+      
+    </div>
+  
+</div>
+
+
+              
+  
+
+  <div class="license-box my-3">
+    <div class="license-title">
+      <div>YOLOv1</div>
+      <div>http://example.com/2023/12/22/YOLOv1/</div>
+    </div>
+    <div class="license-meta">
+      
+        <div class="license-meta-item">
+          <div>作者</div>
+          <div>Wjzqc</div>
+        </div>
+      
+      
+        <div class="license-meta-item license-meta-date">
+          <div>发布于</div>
+          <div>2023年12月22日</div>
+        </div>
+      
+      
+      
+        <div class="license-meta-item">
+          <div>许可协议</div>
+          <div>
+            
+              
+              
+                <a class="print-no-link" target="_blank" href="https://creativecommons.org/licenses/by/4.0/">
+                  <span class="hint--top hint--rounded" aria-label="BY - 署名">
+                    <i class="iconfont icon-cc-by"></i>
+                  </span>
+                </a>
+              
+            
+          </div>
+        </div>
+      
+    </div>
+    <div class="license-icon iconfont"></div>
+  </div>
+
+
+
+              
+                <div class="post-prevnext my-3">
+                  <article class="post-prev col-6">
+                    
+                    
+                      <a href="/2023/12/29/YOLOv2/" title="YOLOv2">
+                        <i class="iconfont icon-arrowleft"></i>
+                        <span class="hidden-mobile">YOLOv2</span>
+                        <span class="visible-mobile">上一篇</span>
+                      </a>
+                    
+                  </article>
+                  <article class="post-next col-6">
+                    
+                    
+                      <a href="/2023/12/18/Faster-RCNN/" title="Faster-RCNN">
+                        <span class="hidden-mobile">Faster-RCNN</span>
+                        <span class="visible-mobile">下一篇</span>
+                        <i class="iconfont icon-arrowright"></i>
+                      </a>
+                    
+                  </article>
+                </div>
+              
+            </div>
+
+            
+          </article>
+        </div>
+      </div>
+    </div>
+
+    <div class="side-col d-none d-lg-block col-lg-2">
+      
+  <aside class="sidebar" style="margin-left: -1rem">
+    <div id="toc">
+  <p class="toc-header">
+    <i class="iconfont icon-list"></i>
+    <span>目录</span>
+  </p>
+  <div class="toc-body" id="toc-body"></div>
+</div>
+
+
+
+  </aside>
+
+
+    </div>
+  </div>
+</div>
+
+
+
+
+
+  
+
+
+
+  
+
+
+
+  
+
+
+
+  
+
+
+
+  
+
+
+
+
+
+
+
+    
+
+    
+      <a id="scroll-top-button" aria-label="TOP" href="#" role="button">
+        <i class="iconfont icon-arrowup" aria-hidden="true"></i>
+      </a>
+    
+
+    
+      <div class="modal fade" id="modalSearch" tabindex="-1" role="dialog" aria-labelledby="ModalLabel"
+     aria-hidden="true">
+  <div class="modal-dialog modal-dialog-scrollable modal-lg" role="document">
+    <div class="modal-content">
+      <div class="modal-header text-center">
+        <h4 class="modal-title w-100 font-weight-bold">搜索</h4>
+        <button type="button" id="local-search-close" class="close" data-dismiss="modal" aria-label="Close">
+          <span aria-hidden="true">&times;</span>
+        </button>
+      </div>
+      <div class="modal-body mx-3">
+        <div class="md-form mb-5">
+          <input type="text" id="local-search-input" class="form-control validate">
+          <label data-error="x" data-success="v" for="local-search-input">关键词</label>
+        </div>
+        <div class="list-group" id="local-search-result"></div>
+      </div>
+    </div>
+  </div>
+</div>
+
+    
+
+    
+  </main>
+
+  <footer>
+    <div class="footer-inner">
+  
+    <div class="footer-content">
+       <a href="" target="_blank" rel="nofollow noopener"><span>Zqc</span></a> <i class="iconfont icon-love"></i> <a href="" target="_blank" rel="nofollow noopener"><span>Zmx</span></a> 
+    </div>
+  
+  
+  
+</div>
+
+  </footer>
+
+  <!-- Scripts -->
+  
+  <script  src="https://lib.baomitu.com/nprogress/0.2.0/nprogress.min.js" ></script>
+  <link  rel="stylesheet" href="https://lib.baomitu.com/nprogress/0.2.0/nprogress.min.css" />
+
+  <script>
+    NProgress.configure({"showSpinner":false,"trickleSpeed":100})
+    NProgress.start()
+    window.addEventListener('load', function() {
+      NProgress.done();
+    })
+  </script>
+
+
+<script  src="https://lib.baomitu.com/jquery/3.6.4/jquery.min.js" ></script>
+<script  src="https://lib.baomitu.com/twitter-bootstrap/4.6.1/js/bootstrap.min.js" ></script>
+<script  src="/js/events.js" ></script>
+<script  src="/js/plugins.js" ></script>
+
+
+  <script  src="https://lib.baomitu.com/typed.js/2.0.12/typed.min.js" ></script>
+  <script>
+    (function (window, document) {
+      var typing = Fluid.plugins.typing;
+      var subtitle = document.getElementById('subtitle');
+      if (!subtitle || !typing) {
+        return;
+      }
+      var text = subtitle.getAttribute('data-typed-text');
+      
+        typing(text);
+      
+    })(window, document);
+  </script>
+
+
+
+
+  
+    <script  src="/js/img-lazyload.js" ></script>
+  
+
+
+
+
+  
+<script>
+  Fluid.utils.createScript('https://lib.baomitu.com/tocbot/4.20.1/tocbot.min.js', function() {
+    var toc = jQuery('#toc');
+    if (toc.length === 0 || !window.tocbot) { return; }
+    var boardCtn = jQuery('#board-ctn');
+    var boardTop = boardCtn.offset().top;
+
+    window.tocbot.init(Object.assign({
+      tocSelector     : '#toc-body',
+      contentSelector : '.markdown-body',
+      linkClass       : 'tocbot-link',
+      activeLinkClass : 'tocbot-active-link',
+      listClass       : 'tocbot-list',
+      isCollapsedClass: 'tocbot-is-collapsed',
+      collapsibleClass: 'tocbot-is-collapsible',
+      scrollSmooth    : true,
+      includeTitleTags: true,
+      headingsOffset  : -boardTop,
+    }, CONFIG.toc));
+    if (toc.find('.toc-list-item').length > 0) {
+      toc.css('visibility', 'visible');
+    }
+
+    Fluid.events.registerRefreshCallback(function() {
+      if ('tocbot' in window) {
+        tocbot.refresh();
+        var toc = jQuery('#toc');
+        if (toc.length === 0 || !tocbot) {
+          return;
+        }
+        if (toc.find('.toc-list-item').length > 0) {
+          toc.css('visibility', 'visible');
+        }
+      }
+    });
+  });
+</script>
+
+
+  <script src=https://lib.baomitu.com/clipboard.js/2.0.11/clipboard.min.js></script>
+
+  <script>Fluid.plugins.codeWidget();</script>
+
+
+  
+<script>
+  Fluid.utils.createScript('https://lib.baomitu.com/anchor-js/5.0.0/anchor.min.js', function() {
+    window.anchors.options = {
+      placement: CONFIG.anchorjs.placement,
+      visible  : CONFIG.anchorjs.visible
+    };
+    if (CONFIG.anchorjs.icon) {
+      window.anchors.options.icon = CONFIG.anchorjs.icon;
+    }
+    var el = (CONFIG.anchorjs.element || 'h1,h2,h3,h4,h5,h6').split(',');
+    var res = [];
+    for (var item of el) {
+      res.push('.markdown-body > ' + item.trim());
+    }
+    if (CONFIG.anchorjs.placement === 'left') {
+      window.anchors.options.class = 'anchorjs-link-left';
+    }
+    window.anchors.add(res.join(', '));
+
+    Fluid.events.registerRefreshCallback(function() {
+      if ('anchors' in window) {
+        anchors.removeAll();
+        var el = (CONFIG.anchorjs.element || 'h1,h2,h3,h4,h5,h6').split(',');
+        var res = [];
+        for (var item of el) {
+          res.push('.markdown-body > ' + item.trim());
+        }
+        if (CONFIG.anchorjs.placement === 'left') {
+          anchors.options.class = 'anchorjs-link-left';
+        }
+        anchors.add(res.join(', '));
+      }
+    });
+  });
+</script>
+
+
+  
+<script>
+  Fluid.utils.createScript('https://lib.baomitu.com/fancybox/3.5.7/jquery.fancybox.min.js', function() {
+    Fluid.plugins.fancyBox();
+  });
+</script>
+
+
+  <script>Fluid.plugins.imageCaption();</script>
+
+  <script  src="/js/local-search.js" ></script>
+
+
+
+
+
+<!-- 主题的启动项，将它保持在最底部 -->
+<!-- the boot of the theme, keep it at the bottom -->
+<script  src="/js/boot.js" ></script>
+
+
+  
+
+  <noscript>
+    <div class="noscript-warning">博客在允许 JavaScript 运行的环境下浏览效果更佳</div>
+  </noscript>
+</body>
+</html>

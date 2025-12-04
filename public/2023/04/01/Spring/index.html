@@ -1,0 +1,818 @@
+
+
+<!DOCTYPE html>
+<html lang="zh-CN" data-default-color-scheme=auto>
+
+
+
+<head>
+  <meta charset="UTF-8">
+
+  <link rel="apple-touch-icon" sizes="76x76" href="/img/fluid.png">
+  <link rel="icon" href="/img/fluid.png">
+  
+
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=5.0, shrink-to-fit=no">
+  <meta http-equiv="x-ua-compatible" content="ie=edge">
+  
+  <meta name="theme-color" content="#2f4154">
+  <meta name="author" content="Wjzqc">
+  <meta name="keywords" content="">
+  
+    <meta name="description" content="系统整理 Spring 核心技术：控制反转（IoC）与依赖注入（DI）实现低耦合设计；涵盖 XML 配置、注解开发以及 @Configuration 类替代 XML 的现代化配置方式；深入讲解 Bean 的生命周期管理、范围配置（singleton&#x2F;prototype）等">
+<meta property="og:type" content="article">
+<meta property="og:title" content="Spring">
+<meta property="og:url" content="http://example.com/2023/04/01/Spring/index.html">
+<meta property="og:site_name" content="Wjzqc&#39;s Blog">
+<meta property="og:description" content="系统整理 Spring 核心技术：控制反转（IoC）与依赖注入（DI）实现低耦合设计；涵盖 XML 配置、注解开发以及 @Configuration 类替代 XML 的现代化配置方式；深入讲解 Bean 的生命周期管理、范围配置（singleton&#x2F;prototype）等">
+<meta property="og:locale" content="zh_CN">
+<meta property="og:image" content="http://example.com/image/Spring/img1.png">
+<meta property="og:image" content="http://example.com/image/Spring/img2.png">
+<meta property="og:image" content="http://example.com/image/Spring/img3.png">
+<meta property="og:image" content="http://example.com/image/Spring/img4.png">
+<meta property="og:image" content="http://example.com/image/Spring/img5.png">
+<meta property="og:image" content="http://example.com/image/Spring/img6.png">
+<meta property="og:image" content="http://example.com/image/Spring/img7.png">
+<meta property="og:image" content="http://example.com/image/Spring/img8.png">
+<meta property="article:published_time" content="2023-04-01T09:12:47.000Z">
+<meta property="article:modified_time" content="2025-09-09T02:21:44.000Z">
+<meta property="article:author" content="Wjzqc">
+<meta property="article:tag" content="SSM">
+<meta property="article:tag" content="开发框架">
+<meta name="twitter:card" content="summary_large_image">
+<meta name="twitter:image" content="http://example.com/image/Spring/img1.png">
+  
+  
+  
+  <title>Spring - Wjzqc&#39;s Blog</title>
+
+  <link  rel="stylesheet" href="https://lib.baomitu.com/twitter-bootstrap/4.6.1/css/bootstrap.min.css" />
+
+
+
+  <link  rel="stylesheet" href="https://lib.baomitu.com/github-markdown-css/4.0.0/github-markdown.min.css" />
+
+  <link  rel="stylesheet" href="https://lib.baomitu.com/hint.css/2.7.0/hint.min.css" />
+
+  <link  rel="stylesheet" href="https://lib.baomitu.com/fancybox/3.5.7/jquery.fancybox.min.css" />
+
+
+
+<!-- 主题依赖的图标库，不要自行修改 -->
+<!-- Do not modify the link that theme dependent icons -->
+
+<link rel="stylesheet" href="//at.alicdn.com/t/c/font_1749284_5i9bdhy70f8.css">
+
+
+
+<link rel="stylesheet" href="//at.alicdn.com/t/c/font_1736178_k526ubmyhba.css">
+
+
+<link  rel="stylesheet" href="/css/main.css" />
+
+
+  <link id="highlight-css" rel="stylesheet" href="/css/highlight.css" />
+  
+    <link id="highlight-css-dark" rel="stylesheet" href="/css/highlight-dark.css" />
+  
+
+
+
+
+  <script id="fluid-configs">
+    var Fluid = window.Fluid || {};
+    Fluid.ctx = Object.assign({}, Fluid.ctx)
+    var CONFIG = {"hostname":"example.com","root":"/","version":"1.9.8","typing":{"enable":true,"typeSpeed":70,"cursorChar":"_","loop":false,"scope":[]},"anchorjs":{"enable":true,"element":"h1,h2,h3,h4,h5,h6","placement":"left","visible":"hover","icon":""},"progressbar":{"enable":true,"height_px":3,"color":"#29d","options":{"showSpinner":false,"trickleSpeed":100}},"code_language":{"enable":true,"default":"TEXT"},"copy_btn":true,"image_caption":{"enable":true},"image_zoom":{"enable":true,"img_url_replace":["",""]},"toc":{"enable":true,"placement":"right","headingSelector":"h1,h2,h3,h4,h5,h6","collapseDepth":0},"lazyload":{"enable":true,"loading_img":"/img/loading.gif","onlypost":false,"offset_factor":2},"web_analytics":{"enable":false,"follow_dnt":true,"baidu":null,"google":{"measurement_id":null},"tencent":{"sid":null,"cid":null},"leancloud":{"app_id":null,"app_key":null,"server_url":null,"path":"window.location.pathname","ignore_local":false},"umami":{"src":null,"website_id":null,"domains":null,"start_time":"2024-01-01T00:00:00.000Z","token":null,"api_server":null}},"search_path":"/local-search.xml","include_content_in_search":true};
+
+    if (CONFIG.web_analytics.follow_dnt) {
+      var dntVal = navigator.doNotTrack || window.doNotTrack || navigator.msDoNotTrack;
+      Fluid.ctx.dnt = dntVal && (dntVal.startsWith('1') || dntVal.startsWith('yes') || dntVal.startsWith('on'));
+    }
+  </script>
+  <script  src="/js/utils.js" ></script>
+  <script  src="/js/color-schema.js" ></script>
+  
+
+
+  
+<meta name="generator" content="Hexo 7.3.0"></head>
+
+
+<body>
+  
+
+  <header>
+    
+
+<div class="header-inner" style="height: 70vh;">
+  <nav id="navbar" class="navbar fixed-top  navbar-expand-lg navbar-dark scrolling-navbar">
+  <div class="container">
+    <a class="navbar-brand" href="/">
+      <strong>Wjzqc</strong>
+    </a>
+
+    <button id="navbar-toggler-btn" class="navbar-toggler" type="button" data-toggle="collapse"
+            data-target="#navbarSupportedContent"
+            aria-controls="navbarSupportedContent" aria-expanded="false" aria-label="Toggle navigation">
+      <div class="animated-icon"><span></span><span></span><span></span></div>
+    </button>
+
+    <!-- Collapsible content -->
+    <div class="collapse navbar-collapse" id="navbarSupportedContent">
+      <ul class="navbar-nav ml-auto text-center">
+        
+          
+          
+          
+          
+            <li class="nav-item">
+              <a class="nav-link" href="/" target="_self">
+                <i class="iconfont icon-home-fill"></i>
+                <span>首页</span>
+              </a>
+            </li>
+          
+        
+          
+          
+          
+          
+            <li class="nav-item">
+              <a class="nav-link" href="/archives/" target="_self">
+                <i class="iconfont icon-archive-fill"></i>
+                <span>归档</span>
+              </a>
+            </li>
+          
+        
+          
+          
+          
+          
+            <li class="nav-item">
+              <a class="nav-link" href="/categories/" target="_self">
+                <i class="iconfont icon-category-fill"></i>
+                <span>分类</span>
+              </a>
+            </li>
+          
+        
+          
+          
+          
+          
+            <li class="nav-item">
+              <a class="nav-link" href="/tags/" target="_self">
+                <i class="iconfont icon-tags-fill"></i>
+                <span>标签</span>
+              </a>
+            </li>
+          
+        
+          
+          
+          
+          
+            <li class="nav-item">
+              <a class="nav-link" href="/about/" target="_self">
+                <i class="iconfont icon-user-fill"></i>
+                <span>关于</span>
+              </a>
+            </li>
+          
+        
+        
+          <li class="nav-item" id="search-btn">
+            <a class="nav-link" target="_self" href="javascript:;" data-toggle="modal" data-target="#modalSearch" aria-label="Search">
+              <i class="iconfont icon-search"></i>
+            </a>
+          </li>
+          
+        
+        
+          <li class="nav-item" id="color-toggle-btn">
+            <a class="nav-link" target="_self" href="javascript:;" aria-label="Color Toggle">
+              <i class="iconfont icon-dark" id="color-toggle-icon"></i>
+            </a>
+          </li>
+        
+      </ul>
+    </div>
+  </div>
+</nav>
+
+  
+
+<div id="banner" class="banner" parallax=true
+     style="background: url('/img/default.png') no-repeat center center; background-size: cover;">
+  <div class="full-bg-img">
+    <div class="mask flex-center" style="background-color: rgba(0, 0, 0, 0.3)">
+      <div class="banner-text text-center fade-in-up">
+        <div class="h2">
+          
+            <span id="subtitle" data-typed-text="Spring"></span>
+          
+        </div>
+
+        
+          
+  <div class="mt-3">
+    
+    
+      <span class="post-meta">
+        <i class="iconfont icon-date-fill" aria-hidden="true"></i>
+        <time datetime="2023-04-01 17:12" pubdate>
+          2023年4月1日 下午
+        </time>
+      </span>
+    
+  </div>
+
+  <div class="mt-1">
+    
+      <span class="post-meta mr-2">
+        <i class="iconfont icon-chart"></i>
+        
+          2.3k 字
+        
+      </span>
+    
+
+    
+      <span class="post-meta mr-2">
+        <i class="iconfont icon-clock-fill"></i>
+        
+        
+        
+          20 分钟
+        
+      </span>
+    
+
+    
+    
+  </div>
+
+
+        
+      </div>
+
+      
+    </div>
+  </div>
+</div>
+
+</div>
+
+  </header>
+
+  <main>
+    
+      
+
+<div class="container-fluid nopadding-x">
+  <div class="row nomargin-x">
+    <div class="side-col d-none d-lg-block col-lg-2">
+      
+
+    </div>
+
+    <div class="col-lg-8 nopadding-x-md">
+      <div class="container nopadding-x-md" id="board-ctn">
+        <div id="board">
+          <article class="post-content mx-auto">
+            <h1 id="seo-header">Spring</h1>
+            
+            
+              <div class="markdown-body">
+                
+                <h1 id="Spring"><a href="#Spring" class="headerlink" title="Spring"></a>Spring</h1><h2 id="1-Spring-介绍"><a href="#1-Spring-介绍" class="headerlink" title="1. Spring 介绍"></a>1. Spring 介绍</h2><h3 id="1-1-Spring-是什么"><a href="#1-1-Spring-是什么" class="headerlink" title="1.1 Spring 是什么?"></a>1.1 Spring 是什么?</h3><ul>
+<li>Spring 是 Java EE 开发的“一站式”框架，提供 IoC（控制反转）、AOP（面向切面编程）、事务管理、Web 支持等功能。</li>
+<li>它不是取代现有技术，而是与它们集成，帮助开发者构建可维护、可扩展的应用。</li>
+</ul>
+<h3 id="1-2-Spring-的优势"><a href="#1-2-Spring-的优势" class="headerlink" title="1.2 Spring 的优势"></a>1.2 Spring 的优势</h3><ul>
+<li><strong>解耦合</strong>：通过 IoC 和依赖注入，减少代码之间的紧耦合。</li>
+<li><strong>模块化</strong>：核心模块可独立使用，易扩展。</li>
+<li><strong>简化开发</strong>：自动管理对象生命周期、事务等，减少 boilerplate 代码。</li>
+<li><strong>生态丰富</strong>：支持 Spring Boot、Spring Cloud 等扩展。</li>
+</ul>
+<h3 id="1-3-Spring-的体系结构"><a href="#1-3-Spring-的体系结构" class="headerlink" title="1.3 Spring 的体系结构"></a>1.3 Spring 的体系结构</h3><p><img src="/image/Spring/img1.png" srcset="/img/loading.gif" lazyload></p>
+<ul>
+<li><strong>核心容器</strong>：包括 Spring Core（IoC）、Spring Beans、Spring Context。</li>
+<li><strong>AOP 和 Instrumentation</strong>：支持切面编程。</li>
+<li><strong>数据访问&#x2F;集成</strong>：JDBC、ORM、事务。</li>
+<li><strong>Web</strong>：MVC、WebSocket。</li>
+<li><strong>测试</strong>：单元测试支持。</li>
+</ul>
+<h2 id="2-Spring-两大核心"><a href="#2-Spring-两大核心" class="headerlink" title="2. Spring 两大核心"></a>2. Spring 两大核心</h2><h3 id="2-1-IoC（控制反转）"><a href="#2-1-IoC（控制反转）" class="headerlink" title="2.1 IoC（控制反转）"></a>2.1 IoC（控制反转）</h3><p><strong>定义</strong>：IoC 是一种设计思想，将对象的创建和依赖管理从应用代码中转移到外部容器（Spring IoC 容器），实现解耦。</p>
+<p><strong>传统问题</strong>：手动创建依赖导致代码强耦合。例如：</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><code class="hljs Java"><span class="hljs-keyword">public</span> <span class="hljs-keyword">class</span> <span class="hljs-title class_">UserService</span> &#123;<br>    <span class="hljs-keyword">private</span> <span class="hljs-type">UserRepository</span> <span class="hljs-variable">userRepository</span> <span class="hljs-operator">=</span> <span class="hljs-keyword">new</span> <span class="hljs-title class_">MySQLUserRepository</span>(); <span class="hljs-comment">// 指定了具体实现</span><br>&#125;<br></code></pre></td></tr></table></figure>
+
+<p>切换实现（如 PostgreSQLUserRepository）需修改并重新编译代码。</p>
+<ul>
+<li>如果你要换成<code>PostgreSQLUserRepository</code>，你就得<strong>改这一行代码</strong>：</li>
+</ul>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><code class="hljs Java"><span class="hljs-keyword">private</span> <span class="hljs-type">UserRepository</span> <span class="hljs-variable">userRepository</span> <span class="hljs-operator">=</span> <span class="hljs-keyword">new</span> <span class="hljs-title class_">PostgreSQLUserRepository</span>();<br></code></pre></td></tr></table></figure>
+
+<p><strong>IoC</strong> 解决方式：业务类只依赖接口，容器注入实现。</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><code class="hljs Java"><span class="hljs-meta">@Component</span><br><span class="hljs-keyword">public</span> <span class="hljs-keyword">class</span> <span class="hljs-title class_">UserService</span> &#123;<br>    <span class="hljs-meta">@Autowired</span><br>    <span class="hljs-keyword">private</span> UserRepository userRepository;<br>&#125;<br></code></pre></td></tr></table></figure>
+
+<ul>
+<li><strong>本质</strong>：引入接口作为中间层，业务代码不关心具体实现。</li>
+<li><strong>切换实现</strong>：只需修改配置（如 @Primary 注解或 Bean 定义），无需改业务代码.</li>
+</ul>
+<p><strong>传统写法</strong>：业务类<strong>知道具体实现</strong>（强耦合）。<strong>IoC 写法</strong>：业务类只依赖接口，由容器提供实现（解耦）。</p>
+<h3 id="2-2-AOP（面向切面编程）"><a href="#2-2-AOP（面向切面编程）" class="headerlink" title="2.2 AOP（面向切面编程）"></a>2.2 AOP（面向切面编程）</h3><p><strong>定义</strong>：AOP 用于处理横切关注点（如日志、事务、安全），将它们从业务逻辑中分离。</p>
+<p><strong>核心概念</strong>：切面（Aspect）、切点（Pointcut）、通知（Advice，如 Before&#x2F;After&#x2F;Around）、织入（Weaving）。</p>
+<h2 id="3-Spring-相关-API"><a href="#3-Spring-相关-API" class="headerlink" title="3 Spring 相关 API"></a>3 Spring 相关 API</h2><h3 id="3-1-ApplicationContext"><a href="#3-1-ApplicationContext" class="headerlink" title="3.1 ApplicationContext"></a>3.1 ApplicationContext</h3><p>IoC 容器的主要接口，代表应用上下文，提供 Bean 管理、事件发布等。</p>
+<h3 id="3-2-ApplicationContext-的实现类"><a href="#3-2-ApplicationContext-的实现类" class="headerlink" title="3.2 ApplicationContext 的实现类"></a>3.2 ApplicationContext 的实现类</h3><ul>
+<li><strong>ClassPathXmlApplicationContext</strong>：从 classpath 加载 XML。</li>
+<li><strong>FileSystemXmlApplicationContext</strong>：从文件系统加载。</li>
+<li><strong>AnnotationConfigApplicationContext</strong>：基于注解配置。</li>
+</ul>
+<h3 id="3-3-getBean-的使用方法"><a href="#3-3-getBean-的使用方法" class="headerlink" title="3.3 getBean 的使用方法"></a>3.3 getBean 的使用方法</h3><ul>
+<li><strong>用 ID</strong>：app.getBean(“userService”)（返回 Object，需要强转）</li>
+<li><strong>用 ID 和类型</strong>：app.getBean(“userService”, UserService.class)（推荐）</li>
+<li><strong>用反射</strong>：app.getBean(UserService.class)（如果唯一）</li>
+</ul>
+<h2 id="4-Spring-快速使用（基本流程及概念）"><a href="#4-Spring-快速使用（基本流程及概念）" class="headerlink" title="4. Spring 快速使用（基本流程及概念）"></a>4. Spring 快速使用（基本流程及概念）</h2><ul>
+<li>引入坐标（Maven POM）</li>
+</ul>
+<figure class="highlight xml"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br></pre></td><td class="code"><pre><code class="hljs XML"><span class="hljs-tag">&lt;<span class="hljs-name">dependencies</span>&gt;</span><br>    <span class="hljs-tag">&lt;<span class="hljs-name">dependency</span>&gt;</span><br>        <span class="hljs-tag">&lt;<span class="hljs-name">groupId</span>&gt;</span>org.springframework<span class="hljs-tag">&lt;/<span class="hljs-name">groupId</span>&gt;</span><br>        <span class="hljs-tag">&lt;<span class="hljs-name">artifactId</span>&gt;</span>spring-context<span class="hljs-tag">&lt;/<span class="hljs-name">artifactId</span>&gt;</span><br>        <span class="hljs-tag">&lt;<span class="hljs-name">version</span>&gt;</span>5.0.5.RELEASE<span class="hljs-tag">&lt;/<span class="hljs-name">version</span>&gt;</span> <span class="hljs-comment">&lt;!-- 可更新到最新版本，如 6.x --&gt;</span><br>    <span class="hljs-tag">&lt;/<span class="hljs-name">dependency</span>&gt;</span><br><span class="hljs-tag">&lt;/<span class="hljs-name">dependencies</span>&gt;</span><br></code></pre></td></tr></table></figure>
+
+<ul>
+<li>创建接口及实现类（创建Bean）</li>
+<li>在 resource 下创建 spring 的配置文件 applicationContext.xml</li>
+<li>在配置文件中进行配置（默认无参构造）</li>
+</ul>
+<figure class="highlight xml"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><code class="hljs XML"><span class="hljs-tag">&lt;<span class="hljs-name">bean</span> <span class="hljs-attr">id</span>=<span class="hljs-string">&quot;userDao&quot;</span> <span class="hljs-attr">class</span>=<span class="hljs-string">&quot;com.test.dao.impl.UserDaoImpl&quot;</span>&gt;</span><span class="hljs-tag">&lt;/<span class="hljs-name">bean</span>&gt;</span><br></code></pre></td></tr></table></figure>
+
+<ul>
+<li>在测试代码中获得 applicationContext 对象，通过提供的方法对 bean 进行操作</li>
+</ul>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br></pre></td><td class="code"><pre><code class="hljs Java"><span class="hljs-keyword">public</span> <span class="hljs-keyword">class</span> <span class="hljs-title class_">UserDaoDemo</span> &#123;<br>    <span class="hljs-keyword">public</span> <span class="hljs-keyword">static</span> <span class="hljs-keyword">void</span> <span class="hljs-title function_">main</span><span class="hljs-params">(String[] args)</span> &#123;<br>        <span class="hljs-type">ApplicationContext</span> <span class="hljs-variable">app</span> <span class="hljs-operator">=</span> <span class="hljs-keyword">new</span> <span class="hljs-title class_">ClassPathXmlApplicationContext</span>(<span class="hljs-string">&quot;applicationContext.xml&quot;</span>);<br>        <span class="hljs-comment">//在编写代码时，编译器并不知道userDao具体是什么类型，所以它使用最通用的类型Object来表示。</span><br><span class="hljs-comment">//        Object userDao = app.getBean(&quot;userDao&quot;);</span><br><span class="hljs-comment">//        UserDao userDao = (UserDao) app.getBean(&quot;userDao&quot;);</span><br>        <span class="hljs-type">UserDao</span> <span class="hljs-variable">userDao</span> <span class="hljs-operator">=</span> app.getBean(<span class="hljs-string">&quot;userDao&quot;</span>, UserDao.class);<span class="hljs-comment">//更建议使用</span><br>        userDao.save();<br>    &#125;<br>&#125;<br></code></pre></td></tr></table></figure>
+
+<h3 id="4-1-Bean-标签基本配置"><a href="#4-1-Bean-标签基本配置" class="headerlink" title="4.1 Bean 标签基本配置"></a>4.1 Bean 标签基本配置</h3><p>在 Spring 中，任何被 IoC 容器管理的对象都被称为 Bean。这些对象通常是由容器创建、初始化、装配和销毁的。Bean 默认情况下调用的是类中的无参构造函数，如果没有无参构造函数则不能创建成功。</p>
+<p>基本属性：</p>
+<ul>
+<li>id：Bean 实例在 Spring 容器中的唯一标识</li>
+<li>class：Bean 的全限定名称</li>
+</ul>
+<h3 id="4-2-Bean-标签范围配置"><a href="#4-2-Bean-标签范围配置" class="headerlink" title="4.2 Bean 标签范围配置"></a>4.2 Bean 标签范围配置</h3><p><img src="/image/Spring/img2.png" srcset="/img/loading.gif" lazyload></p>
+<p>scope 为 singleton 时表示，容器中的对象只有一个</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><code class="hljs Java"><span class="hljs-type">UserDao</span> <span class="hljs-variable">userDao1</span> <span class="hljs-operator">=</span> app.getBean(<span class="hljs-string">&quot;userDao&quot;</span>,UserDao.class);<br><span class="hljs-type">UserDao</span> <span class="hljs-variable">userDao2</span> <span class="hljs-operator">=</span> app.getBean(<span class="hljs-string">&quot;userDao&quot;</span>,UserDao.class);<br>System.out.println(userDao1);<br>System.out.println(userDao2);<span class="hljs-comment">//获得的bean的两个地址是一样的</span><br></code></pre></td></tr></table></figure>
+
+<p>scope 为 prototype 时表示，容器中的对象能创建多个</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><code class="hljs Java"><span class="hljs-type">UserDao</span> <span class="hljs-variable">userDao1</span> <span class="hljs-operator">=</span> app.getBean(<span class="hljs-string">&quot;userDao&quot;</span>,UserDao.class);<br><span class="hljs-type">UserDao</span> <span class="hljs-variable">userDao2</span> <span class="hljs-operator">=</span> app.getBean(<span class="hljs-string">&quot;userDao&quot;</span>,UserDao.class);<br>System.out.println(userDao1);<br>System.out.println(userDao2);<span class="hljs-comment">//获得的bean的两个地址是不同的</span><br></code></pre></td></tr></table></figure>
+
+<h3 id="4-3-Bean-生命周期配置"><a href="#4-3-Bean-生命周期配置" class="headerlink" title="4.3 Bean 生命周期配置"></a>4.3 Bean 生命周期配置</h3><p><img src="/image/Spring/img3.png" srcset="/img/loading.gif" lazyload></p>
+<p>可以在配置文件中定义对象初始化和销毁时要执行的方法：</p>
+<figure class="highlight xml"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><code class="hljs XML"><span class="hljs-tag">&lt;<span class="hljs-name">bean</span> <span class="hljs-attr">id</span>=<span class="hljs-string">&quot;userDao&quot;</span> <span class="hljs-attr">class</span>=<span class="hljs-string">&quot;com.test.dao.impl.UserDaoImpl&quot;</span> <span class="hljs-attr">init-method</span>=<span class="hljs-string">&quot;init&quot;</span> <span class="hljs-attr">destroy-method</span>=<span class="hljs-string">&quot;destory&quot;</span>&gt;</span><span class="hljs-tag">&lt;/<span class="hljs-name">bean</span>&gt;</span><br></code></pre></td></tr></table></figure>
+
+<h3 id="4-4-Bean-实例化的三种方式"><a href="#4-4-Bean-实例化的三种方式" class="headerlink" title="4.4 Bean 实例化的三种方式"></a>4.4 Bean 实例化的三种方式</h3><ul>
+<li>无参构造（默认）</li>
+<li>静态工厂方法</li>
+<li>实例工厂方法</li>
+</ul>
+<h3 id="4-5-Bean-的依赖注入"><a href="#4-5-Bean-的依赖注入" class="headerlink" title="4.5 Bean 的依赖注入"></a>4.5 Bean 的依赖注入</h3><p>依赖注入（Dependency Injection, DI）是 Spring 实现控制反转（IoC）的一种具体方式。它的核心思想是：将对象的依赖关系（即对象所需的外部资源或对象）从代码中剥离，由 Spring IoC 容器动态提供，从而降低代码耦合度，提高灵活性和可测试性。</p>
+<p>就是说对于对象 A 和 B，A（Service 层）的内部会使用 B（Dao 层）。我不想在 A 中自己去创建 B，而是让 A 中自动就含有 B 的对象<strong>，也就是我获得的 service 层的对象自带所需 dao 层的对象</strong>（把这种依赖关系交给 spring 容器，这个就是依赖注入）。</p>
+<p><strong>传统方式中</strong>，UserService 中需要 new UserDao</p>
+<p><img src="/image/Spring/img4.png" srcset="/img/loading.gif" lazyload></p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br></pre></td><td class="code"><pre><code class="hljs Java"><span class="hljs-keyword">public</span> <span class="hljs-keyword">class</span> <span class="hljs-title class_">UserService</span> &#123;<br>    <span class="hljs-keyword">private</span> <span class="hljs-type">UserDao</span> <span class="hljs-variable">userDao</span> <span class="hljs-operator">=</span> <span class="hljs-keyword">new</span> <span class="hljs-title class_">UserDaoImpl</span>(); <span class="hljs-comment">// 硬编码具体实现</span><br>    <span class="hljs-keyword">public</span> <span class="hljs-keyword">void</span> <span class="hljs-title function_">save</span><span class="hljs-params">()</span> &#123;<br>        userDao.save();<br>    &#125;<br>&#125;<br></code></pre></td></tr></table></figure>
+
+<p>如果要切换 UserDaoImpl 为 UserDaoImpl2（如从 MySQL 切换到 PostgreSQL），必须修改 UserService 的代码并重新编译，违背了开闭原则（对扩展开放，对修改关闭）。</p>
+<p><strong>DI 的解决方式：</strong> Spring IoC 容器负责创建和管理依赖对象，业务代码只依赖接口，由容器注入具体实现。切换实现（如从 UserDaoImpl 到 UserDaoImpl2）只需修改配置（XML 或注解），无需更改业务代码。</p>
+<p><img src="/image/Spring/img5.png" srcset="/img/loading.gif" lazyload></p>
+<h3 id="4-6-依赖注入的方式"><a href="#4-6-依赖注入的方式" class="headerlink" title="4.6 依赖注入的方式"></a>4.6 依赖注入的方式</h3><ul>
+<li>set 方法（配置文件 name 的值为 set 方法去掉 set，然后首字母大写变小写）</li>
+</ul>
+<figure class="highlight xml"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><code class="hljs XML"><span class="hljs-tag">&lt;<span class="hljs-name">bean</span> <span class="hljs-attr">id</span>=<span class="hljs-string">&quot;userDao&quot;</span> <span class="hljs-attr">class</span>=<span class="hljs-string">&quot;com.test.dao.impl.UserDaoImpl&quot;</span> <span class="hljs-attr">scope</span>=<span class="hljs-string">&quot;prototype&quot;</span>&gt;</span><span class="hljs-tag">&lt;/<span class="hljs-name">bean</span>&gt;</span><br><br><span class="hljs-tag">&lt;<span class="hljs-name">bean</span> <span class="hljs-attr">id</span>=<span class="hljs-string">&quot;userService&quot;</span> <span class="hljs-attr">class</span>=<span class="hljs-string">&quot;com.test.service.impl.UserServiceImpl&quot;</span>&gt;</span><br>    <span class="hljs-tag">&lt;<span class="hljs-name">property</span> <span class="hljs-attr">name</span>=<span class="hljs-string">&quot;userDao&quot;</span> <span class="hljs-attr">ref</span>=<span class="hljs-string">&quot;userDao&quot;</span>&gt;</span><span class="hljs-tag">&lt;/<span class="hljs-name">property</span>&gt;</span><br><span class="hljs-tag">&lt;/<span class="hljs-name">bean</span>&gt;</span><br></code></pre></td></tr></table></figure>
+
+<p>在 xml 文件中表明通过 userService 中的 setUserDao 方法将 UserDao 注给了 UserService。</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br></pre></td><td class="code"><pre><code class="hljs Java"><span class="hljs-keyword">public</span> <span class="hljs-keyword">class</span> <span class="hljs-title class_">UserServiceImpl</span> <span class="hljs-keyword">implements</span> <span class="hljs-title class_">UserService</span> &#123;<br>    <span class="hljs-keyword">private</span> UserDao userDao;<br>    <span class="hljs-keyword">public</span> <span class="hljs-keyword">void</span> <span class="hljs-title function_">setUserDao</span><span class="hljs-params">(UserDao userDao)</span> &#123;<br>        <span class="hljs-built_in">this</span>.userDao = userDao;<br>    &#125;<br>    <span class="hljs-meta">@Override</span><br>    <span class="hljs-keyword">public</span> <span class="hljs-keyword">void</span> <span class="hljs-title function_">save</span><span class="hljs-params">()</span> &#123;<br>        userDao.save();<br>    &#125;<br>&#125;<br></code></pre></td></tr></table></figure>
+
+<ul>
+<li>构造方法（name 是构造方法的参数名）</li>
+</ul>
+<figure class="highlight xml"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><code class="hljs XML"><span class="hljs-tag">&lt;<span class="hljs-name">bean</span> <span class="hljs-attr">id</span>=<span class="hljs-string">&quot;userService&quot;</span> <span class="hljs-attr">class</span>=<span class="hljs-string">&quot;com.test.service.impl.UserServiceImpl&quot;</span>&gt;</span><br>    <span class="hljs-tag">&lt;<span class="hljs-name">constructor-arg</span> <span class="hljs-attr">name</span>=<span class="hljs-string">&quot;userDao&quot;</span> <span class="hljs-attr">ref</span>=<span class="hljs-string">&quot;userDao&quot;</span>&gt;</span><span class="hljs-tag">&lt;/<span class="hljs-name">constructor-arg</span>&gt;</span><br><span class="hljs-tag">&lt;/<span class="hljs-name">bean</span>&gt;</span><br></code></pre></td></tr></table></figure>
+
+<h3 id="4-7-Bean-的依赖注入的数据类型"><a href="#4-7-Bean-的依赖注入的数据类型" class="headerlink" title="4.7 Bean 的依赖注入的数据类型"></a>4.7 Bean 的依赖注入的数据类型</h3><ul>
+<li>普通数据类型：使用 value 属性。</li>
+<li>引用数据类型：使用 ref 属性。</li>
+<li>集合数据类型：使用 list&#x2F;set&#x2F;map 等标签。</li>
+</ul>
+<h3 id="4-8-引入其他配置文件"><a href="#4-8-引入其他配置文件" class="headerlink" title="4.8 引入其他配置文件"></a>4.8 引入其他配置文件</h3><p>使用 import 引用其他的配置文件</p>
+<figure class="highlight xml"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><code class="hljs XML"><span class="hljs-tag">&lt;<span class="hljs-name">import</span> <span class="hljs-attr">resource</span>=<span class="hljs-string">&quot;classpath:other.xml&quot;</span>/&gt;</span><br></code></pre></td></tr></table></figure>
+
+<h3 id="4-9-重点配置总结"><a href="#4-9-重点配置总结" class="headerlink" title="4.9 重点配置总结"></a>4.9 重点配置总结</h3><p><img src="/image/Spring/img6.png" srcset="/img/loading.gif" lazyload></p>
+<h2 id="5-Spring-注解开发（需要配置组件扫描）"><a href="#5-Spring-注解开发（需要配置组件扫描）" class="headerlink" title="5 Spring 注解开发（需要配置组件扫描）"></a>5 Spring 注解开发（需要配置组件扫描）</h2><p><strong>目的</strong>：通过注解声明 Bean、注入依赖、配置容器，减少 XML 配置。</p>
+<p><strong>前提</strong>：需要引入 context 命名空间同时需要在 XML 文件中启用组件扫描以支持注解：</p>
+<figure class="highlight xml"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><code class="hljs XML"><span class="hljs-tag">&lt;<span class="hljs-name">context:component-scan</span> <span class="hljs-attr">base-package</span>=<span class="hljs-string">&quot;com.test&quot;</span>/&gt;</span><br></code></pre></td></tr></table></figure>
+
+<h3 id="5-1-Spring-原始注解（只能注入自定义的-bean）"><a href="#5-1-Spring-原始注解（只能注入自定义的-bean）" class="headerlink" title="5.1 Spring 原始注解（只能注入自定义的 bean）"></a>5.1 Spring 原始注解（只能注入自定义的 bean）</h3><p><img src="/image/Spring/img7.png" srcset="/img/loading.gif" lazyload></p>
+<p>以 service 为例：</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br></pre></td><td class="code"><pre><code class="hljs Java"><span class="hljs-meta">@Service</span> <span class="hljs-comment">// 声明为 Service 层的 Bean</span><br><span class="hljs-keyword">public</span> <span class="hljs-keyword">class</span> <span class="hljs-title class_">UserService</span> &#123;<br>    <span class="hljs-meta">@Autowired</span> <span class="hljs-comment">// 按类型自动注入 UserDao</span><br>    <span class="hljs-keyword">private</span> UserDao userDao;<br><br>    <span class="hljs-meta">@Value(&quot;admin&quot;)</span> <span class="hljs-comment">// 注入普通属性值</span><br>    <span class="hljs-keyword">private</span> String role;<br><br>    <span class="hljs-keyword">public</span> <span class="hljs-keyword">void</span> <span class="hljs-title function_">performSave</span><span class="hljs-params">()</span> &#123;<br>        System.out.println(<span class="hljs-string">&quot;UserService role: &quot;</span> + role);<br>        userDao.save();<br>    &#125;<br>&#125;<br></code></pre></td></tr></table></figure>
+
+<p>@Component(“”)：用于 Spring 创建对象 括号内为相当于 xml 中的 id</p>
+<p>@Autowired：自动注入，会根据声明的<strong>类型</strong>从 Spring 容器中查找<strong>此类型的 Bean</strong>。如果容器中此类型有多个 bean 就会出错</p>
+<p>@Qualifier(“”)：是<strong>按照 id 值从</strong>容器中进行匹配的并且并于要有 @Autowired 才能使用，<strong>如果 spring 中有多个此类型的 Bean</strong>那就需要用 @Qualifier 指定注入</p>
+<p>@Resource(name&#x3D;””)：就相当于 @Autowired+@Qualifier(“”)</p>
+<p>@Controller、@Service、@Repository 与 @Component 功能一样，增强可读性</p>
+<p>@Value(“”) 注入普通属性值，用于查找配置文件的值并赋值</p>
+<h3 id="5-2-Spring-新注解（用于实现配置类替代-applicationContext-xml-文件）"><a href="#5-2-Spring-新注解（用于实现配置类替代-applicationContext-xml-文件）" class="headerlink" title="5.2 Spring 新注解（用于实现配置类替代 applicationContext.xml 文件）"></a>5.2 Spring 新注解（用于实现配置类替代 applicationContext.xml 文件）</h3><p><img src="/image/Spring/img8.png" srcset="/img/loading.gif" lazyload></p>
+<p>例子：</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br></pre></td><td class="code"><pre><code class="hljs Java"><span class="hljs-meta">@Configuration</span> <span class="hljs-comment">// 标记为 Spring 核心配置类</span><br><span class="hljs-meta">@PropertySource(&quot;classpath:application.properties&quot;)</span> <span class="hljs-comment">// 加载配置文件</span><br><span class="hljs-keyword">public</span> <span class="hljs-keyword">class</span> <span class="hljs-title class_">AppConfig</span> &#123;<br>    <span class="hljs-meta">@Bean(&quot;userDao&quot;)</span> <span class="hljs-comment">// 定义 Bean，名称为 userDao</span><br>    <span class="hljs-keyword">public</span> UserDao <span class="hljs-title function_">userDao</span><span class="hljs-params">()</span> &#123;<br>        <span class="hljs-keyword">return</span> <span class="hljs-keyword">new</span> <span class="hljs-title class_">UserDaoImpl</span>();<br>    &#125;<br>    <span class="hljs-meta">@Bean(&quot;userService&quot;)</span> <span class="hljs-comment">// 定义 Bean，名称为 userService</span><br>    <span class="hljs-keyword">public</span> UserService <span class="hljs-title function_">userService</span><span class="hljs-params">(UserDao userDao)</span> &#123; <span class="hljs-comment">// 注入 userDao</span><br>        <span class="hljs-type">UserService</span> <span class="hljs-variable">service</span> <span class="hljs-operator">=</span> <span class="hljs-keyword">new</span> <span class="hljs-title class_">UserService</span>();<br>        service.setUserDao(userDao);<br>        <span class="hljs-keyword">return</span> service;<br>    &#125;<br>&#125;<br></code></pre></td></tr></table></figure>
+
+<p>@Configuration：标志该类是 Spring 的一个核心<strong>配置类</strong> (创建一个<strong>类，用于代替 xml 配置文件</strong>)。相比于 @Component，@Configuration 会使用 cglib 代理对象确保配置类是单例模式，也就是每次取出来的 bean 是同一个</p>
+<p>@Bean(“”)：Spring 会将当前方法的返回值以指定名称存储到 Spring 容器中</p>
+<p>@PropertySource(“classpath:xxx.properties”)：加载外部的配置文件，放入 Spring 容器</p>
+<p>@Import({xxx.class,xxxx.class})：加载其他配置类</p>
+<p>这里说一下 @Bean 和 @Component 的区别：</p>
+<ol>
+<li><strong>作用对象不同</strong><ul>
+<li>@Component 注解作用于<strong>类</strong>上，用于标识一个类为 Spring 管理的组件，Spring 会自动扫描并实例化该类</li>
+<li>@Bean 注解作用于<strong>方法</strong>上，用于手动定义一个 Bean 对象，方法的返回值将被纳入 Spring 容器</li>
+</ul>
+</li>
+<li><strong>使用场景不同</strong><ul>
+<li>@Component 适用于<strong>自定义类</strong>，通过类路径扫描自动检测并注册到容器中</li>
+<li>@Bean 适用于<strong>第三方类</strong>（无法修改源代码添加 @Component）或需要<strong>复杂配置</strong>的对象创建</li>
+</ul>
+</li>
+<li><strong>配置方式不同</strong><ul>
+<li>@Component 是<strong>自动配置</strong>，只需在类上标注，配合 @ComponentScan 即可被 Spring 扫描到</li>
+<li>@Bean 是<strong>手动配置</strong>，需要在配置类（标注 @Configuration）中定义方法，显式返回 Bean 实例</li>
+</ul>
+</li>
+</ol>
+
+                
+              </div>
+            
+            <hr/>
+            <div>
+              <div class="post-metas my-3">
+  
+    <div class="post-meta mr-3 d-flex align-items-center">
+      <i class="iconfont icon-category"></i>
+      
+
+<span class="category-chains">
+  
+  
+    
+      <span class="category-chain">
+        
+  <a href="/categories/%E6%8A%80%E6%9C%AF/" class="category-chain-item">技术</a>
+  
+  
+
+      </span>
+    
+  
+</span>
+
+    </div>
+  
+  
+    <div class="post-meta">
+      <i class="iconfont icon-tags"></i>
+      
+        <a href="/tags/SSM/" class="print-no-link">#SSM</a>
+      
+        <a href="/tags/%E5%BC%80%E5%8F%91%E6%A1%86%E6%9E%B6/" class="print-no-link">#开发框架</a>
+      
+    </div>
+  
+</div>
+
+
+              
+  
+
+  <div class="license-box my-3">
+    <div class="license-title">
+      <div>Spring</div>
+      <div>http://example.com/2023/04/01/Spring/</div>
+    </div>
+    <div class="license-meta">
+      
+        <div class="license-meta-item">
+          <div>作者</div>
+          <div>Wjzqc</div>
+        </div>
+      
+      
+        <div class="license-meta-item license-meta-date">
+          <div>发布于</div>
+          <div>2023年4月1日</div>
+        </div>
+      
+      
+      
+        <div class="license-meta-item">
+          <div>许可协议</div>
+          <div>
+            
+              
+              
+                <a class="print-no-link" target="_blank" href="https://creativecommons.org/licenses/by/4.0/">
+                  <span class="hint--top hint--rounded" aria-label="BY - 署名">
+                    <i class="iconfont icon-cc-by"></i>
+                  </span>
+                </a>
+              
+            
+          </div>
+        </div>
+      
+    </div>
+    <div class="license-icon iconfont"></div>
+  </div>
+
+
+
+              
+                <div class="post-prevnext my-3">
+                  <article class="post-prev col-6">
+                    
+                    
+                      <a href="/2023/04/08/Spring%20AOP/" title="Spring AOP">
+                        <i class="iconfont icon-arrowleft"></i>
+                        <span class="hidden-mobile">Spring AOP</span>
+                        <span class="visible-mobile">上一篇</span>
+                      </a>
+                    
+                  </article>
+                  <article class="post-next col-6">
+                    
+                    
+                      <a href="/2023/03/09/git/" title="git">
+                        <span class="hidden-mobile">git</span>
+                        <span class="visible-mobile">下一篇</span>
+                        <i class="iconfont icon-arrowright"></i>
+                      </a>
+                    
+                  </article>
+                </div>
+              
+            </div>
+
+            
+          </article>
+        </div>
+      </div>
+    </div>
+
+    <div class="side-col d-none d-lg-block col-lg-2">
+      
+  <aside class="sidebar" style="margin-left: -1rem">
+    <div id="toc">
+  <p class="toc-header">
+    <i class="iconfont icon-list"></i>
+    <span>目录</span>
+  </p>
+  <div class="toc-body" id="toc-body"></div>
+</div>
+
+
+
+  </aside>
+
+
+    </div>
+  </div>
+</div>
+
+
+
+
+
+  
+
+
+
+  
+
+
+
+  
+
+
+
+  
+
+
+
+  
+
+
+
+
+
+
+
+    
+
+    
+      <a id="scroll-top-button" aria-label="TOP" href="#" role="button">
+        <i class="iconfont icon-arrowup" aria-hidden="true"></i>
+      </a>
+    
+
+    
+      <div class="modal fade" id="modalSearch" tabindex="-1" role="dialog" aria-labelledby="ModalLabel"
+     aria-hidden="true">
+  <div class="modal-dialog modal-dialog-scrollable modal-lg" role="document">
+    <div class="modal-content">
+      <div class="modal-header text-center">
+        <h4 class="modal-title w-100 font-weight-bold">搜索</h4>
+        <button type="button" id="local-search-close" class="close" data-dismiss="modal" aria-label="Close">
+          <span aria-hidden="true">&times;</span>
+        </button>
+      </div>
+      <div class="modal-body mx-3">
+        <div class="md-form mb-5">
+          <input type="text" id="local-search-input" class="form-control validate">
+          <label data-error="x" data-success="v" for="local-search-input">关键词</label>
+        </div>
+        <div class="list-group" id="local-search-result"></div>
+      </div>
+    </div>
+  </div>
+</div>
+
+    
+
+    
+  </main>
+
+  <footer>
+    <div class="footer-inner">
+  
+    <div class="footer-content">
+       <a href="" target="_blank" rel="nofollow noopener"><span>Zqc</span></a> <i class="iconfont icon-love"></i> <a href="" target="_blank" rel="nofollow noopener"><span>Zmx</span></a> 
+    </div>
+  
+  
+  
+</div>
+
+  </footer>
+
+  <!-- Scripts -->
+  
+  <script  src="https://lib.baomitu.com/nprogress/0.2.0/nprogress.min.js" ></script>
+  <link  rel="stylesheet" href="https://lib.baomitu.com/nprogress/0.2.0/nprogress.min.css" />
+
+  <script>
+    NProgress.configure({"showSpinner":false,"trickleSpeed":100})
+    NProgress.start()
+    window.addEventListener('load', function() {
+      NProgress.done();
+    })
+  </script>
+
+
+<script  src="https://lib.baomitu.com/jquery/3.6.4/jquery.min.js" ></script>
+<script  src="https://lib.baomitu.com/twitter-bootstrap/4.6.1/js/bootstrap.min.js" ></script>
+<script  src="/js/events.js" ></script>
+<script  src="/js/plugins.js" ></script>
+
+
+  <script  src="https://lib.baomitu.com/typed.js/2.0.12/typed.min.js" ></script>
+  <script>
+    (function (window, document) {
+      var typing = Fluid.plugins.typing;
+      var subtitle = document.getElementById('subtitle');
+      if (!subtitle || !typing) {
+        return;
+      }
+      var text = subtitle.getAttribute('data-typed-text');
+      
+        typing(text);
+      
+    })(window, document);
+  </script>
+
+
+
+
+  
+    <script  src="/js/img-lazyload.js" ></script>
+  
+
+
+
+
+  
+<script>
+  Fluid.utils.createScript('https://lib.baomitu.com/tocbot/4.20.1/tocbot.min.js', function() {
+    var toc = jQuery('#toc');
+    if (toc.length === 0 || !window.tocbot) { return; }
+    var boardCtn = jQuery('#board-ctn');
+    var boardTop = boardCtn.offset().top;
+
+    window.tocbot.init(Object.assign({
+      tocSelector     : '#toc-body',
+      contentSelector : '.markdown-body',
+      linkClass       : 'tocbot-link',
+      activeLinkClass : 'tocbot-active-link',
+      listClass       : 'tocbot-list',
+      isCollapsedClass: 'tocbot-is-collapsed',
+      collapsibleClass: 'tocbot-is-collapsible',
+      scrollSmooth    : true,
+      includeTitleTags: true,
+      headingsOffset  : -boardTop,
+    }, CONFIG.toc));
+    if (toc.find('.toc-list-item').length > 0) {
+      toc.css('visibility', 'visible');
+    }
+
+    Fluid.events.registerRefreshCallback(function() {
+      if ('tocbot' in window) {
+        tocbot.refresh();
+        var toc = jQuery('#toc');
+        if (toc.length === 0 || !tocbot) {
+          return;
+        }
+        if (toc.find('.toc-list-item').length > 0) {
+          toc.css('visibility', 'visible');
+        }
+      }
+    });
+  });
+</script>
+
+
+  <script src=https://lib.baomitu.com/clipboard.js/2.0.11/clipboard.min.js></script>
+
+  <script>Fluid.plugins.codeWidget();</script>
+
+
+  
+<script>
+  Fluid.utils.createScript('https://lib.baomitu.com/anchor-js/5.0.0/anchor.min.js', function() {
+    window.anchors.options = {
+      placement: CONFIG.anchorjs.placement,
+      visible  : CONFIG.anchorjs.visible
+    };
+    if (CONFIG.anchorjs.icon) {
+      window.anchors.options.icon = CONFIG.anchorjs.icon;
+    }
+    var el = (CONFIG.anchorjs.element || 'h1,h2,h3,h4,h5,h6').split(',');
+    var res = [];
+    for (var item of el) {
+      res.push('.markdown-body > ' + item.trim());
+    }
+    if (CONFIG.anchorjs.placement === 'left') {
+      window.anchors.options.class = 'anchorjs-link-left';
+    }
+    window.anchors.add(res.join(', '));
+
+    Fluid.events.registerRefreshCallback(function() {
+      if ('anchors' in window) {
+        anchors.removeAll();
+        var el = (CONFIG.anchorjs.element || 'h1,h2,h3,h4,h5,h6').split(',');
+        var res = [];
+        for (var item of el) {
+          res.push('.markdown-body > ' + item.trim());
+        }
+        if (CONFIG.anchorjs.placement === 'left') {
+          anchors.options.class = 'anchorjs-link-left';
+        }
+        anchors.add(res.join(', '));
+      }
+    });
+  });
+</script>
+
+
+  
+<script>
+  Fluid.utils.createScript('https://lib.baomitu.com/fancybox/3.5.7/jquery.fancybox.min.js', function() {
+    Fluid.plugins.fancyBox();
+  });
+</script>
+
+
+  <script>Fluid.plugins.imageCaption();</script>
+
+  <script  src="/js/local-search.js" ></script>
+
+
+
+
+
+<!-- 主题的启动项，将它保持在最底部 -->
+<!-- the boot of the theme, keep it at the bottom -->
+<script  src="/js/boot.js" ></script>
+
+
+  
+
+  <noscript>
+    <div class="noscript-warning">博客在允许 JavaScript 运行的环境下浏览效果更佳</div>
+  </noscript>
+</body>
+</html>

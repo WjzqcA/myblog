@@ -1,0 +1,786 @@
+
+
+<!DOCTYPE html>
+<html lang="zh-CN" data-default-color-scheme=auto>
+
+
+
+<head>
+  <meta charset="UTF-8">
+
+  <link rel="apple-touch-icon" sizes="76x76" href="/img/fluid.png">
+  <link rel="icon" href="/img/fluid.png">
+  
+
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=5.0, shrink-to-fit=no">
+  <meta http-equiv="x-ua-compatible" content="ie=edge">
+  
+  <meta name="theme-color" content="#2f4154">
+  <meta name="author" content="Wjzqc">
+  <meta name="keywords" content="">
+  
+    <meta name="description" content="Redisson 是一个基于 Redis 的 Java 内存数据网格（In-Memory Data Grid）框架，提供了对 Redis 的分布式、可扩展、高可用的数据结构、服务和工具的支持。它不仅封装了常见的 Redis 操作，还实现了如分布式锁（可重入锁、公平锁、红锁等）、分布式集合、布隆过滤器、队列、限流器、调度任务等功能，极大简化了开发分布式应用的复杂度。Redisson 支持多种部署模式">
+<meta property="og:type" content="article">
+<meta property="og:title" content="redisson">
+<meta property="og:url" content="http://example.com/2023/05/25/redisson/index.html">
+<meta property="og:site_name" content="Wjzqc&#39;s Blog">
+<meta property="og:description" content="Redisson 是一个基于 Redis 的 Java 内存数据网格（In-Memory Data Grid）框架，提供了对 Redis 的分布式、可扩展、高可用的数据结构、服务和工具的支持。它不仅封装了常见的 Redis 操作，还实现了如分布式锁（可重入锁、公平锁、红锁等）、分布式集合、布隆过滤器、队列、限流器、调度任务等功能，极大简化了开发分布式应用的复杂度。Redisson 支持多种部署模式">
+<meta property="og:locale" content="zh_CN">
+<meta property="article:published_time" content="2023-05-25T03:38:36.000Z">
+<meta property="article:modified_time" content="2025-09-09T03:22:44.000Z">
+<meta property="article:author" content="Wjzqc">
+<meta property="article:tag" content="并发">
+<meta property="article:tag" content="锁">
+<meta property="article:tag" content="缓存">
+<meta name="twitter:card" content="summary_large_image">
+  
+  
+  
+  <title>redisson - Wjzqc&#39;s Blog</title>
+
+  <link  rel="stylesheet" href="https://lib.baomitu.com/twitter-bootstrap/4.6.1/css/bootstrap.min.css" />
+
+
+
+  <link  rel="stylesheet" href="https://lib.baomitu.com/github-markdown-css/4.0.0/github-markdown.min.css" />
+
+  <link  rel="stylesheet" href="https://lib.baomitu.com/hint.css/2.7.0/hint.min.css" />
+
+  <link  rel="stylesheet" href="https://lib.baomitu.com/fancybox/3.5.7/jquery.fancybox.min.css" />
+
+
+
+<!-- 主题依赖的图标库，不要自行修改 -->
+<!-- Do not modify the link that theme dependent icons -->
+
+<link rel="stylesheet" href="//at.alicdn.com/t/c/font_1749284_5i9bdhy70f8.css">
+
+
+
+<link rel="stylesheet" href="//at.alicdn.com/t/c/font_1736178_k526ubmyhba.css">
+
+
+<link  rel="stylesheet" href="/css/main.css" />
+
+
+  <link id="highlight-css" rel="stylesheet" href="/css/highlight.css" />
+  
+    <link id="highlight-css-dark" rel="stylesheet" href="/css/highlight-dark.css" />
+  
+
+
+
+
+  <script id="fluid-configs">
+    var Fluid = window.Fluid || {};
+    Fluid.ctx = Object.assign({}, Fluid.ctx)
+    var CONFIG = {"hostname":"example.com","root":"/","version":"1.9.8","typing":{"enable":true,"typeSpeed":70,"cursorChar":"_","loop":false,"scope":[]},"anchorjs":{"enable":true,"element":"h1,h2,h3,h4,h5,h6","placement":"left","visible":"hover","icon":""},"progressbar":{"enable":true,"height_px":3,"color":"#29d","options":{"showSpinner":false,"trickleSpeed":100}},"code_language":{"enable":true,"default":"TEXT"},"copy_btn":true,"image_caption":{"enable":true},"image_zoom":{"enable":true,"img_url_replace":["",""]},"toc":{"enable":true,"placement":"right","headingSelector":"h1,h2,h3,h4,h5,h6","collapseDepth":0},"lazyload":{"enable":true,"loading_img":"/img/loading.gif","onlypost":false,"offset_factor":2},"web_analytics":{"enable":false,"follow_dnt":true,"baidu":null,"google":{"measurement_id":null},"tencent":{"sid":null,"cid":null},"leancloud":{"app_id":null,"app_key":null,"server_url":null,"path":"window.location.pathname","ignore_local":false},"umami":{"src":null,"website_id":null,"domains":null,"start_time":"2024-01-01T00:00:00.000Z","token":null,"api_server":null}},"search_path":"/local-search.xml","include_content_in_search":true};
+
+    if (CONFIG.web_analytics.follow_dnt) {
+      var dntVal = navigator.doNotTrack || window.doNotTrack || navigator.msDoNotTrack;
+      Fluid.ctx.dnt = dntVal && (dntVal.startsWith('1') || dntVal.startsWith('yes') || dntVal.startsWith('on'));
+    }
+  </script>
+  <script  src="/js/utils.js" ></script>
+  <script  src="/js/color-schema.js" ></script>
+  
+
+
+  
+<meta name="generator" content="Hexo 7.3.0"></head>
+
+
+<body>
+  
+
+  <header>
+    
+
+<div class="header-inner" style="height: 70vh;">
+  <nav id="navbar" class="navbar fixed-top  navbar-expand-lg navbar-dark scrolling-navbar">
+  <div class="container">
+    <a class="navbar-brand" href="/">
+      <strong>Wjzqc</strong>
+    </a>
+
+    <button id="navbar-toggler-btn" class="navbar-toggler" type="button" data-toggle="collapse"
+            data-target="#navbarSupportedContent"
+            aria-controls="navbarSupportedContent" aria-expanded="false" aria-label="Toggle navigation">
+      <div class="animated-icon"><span></span><span></span><span></span></div>
+    </button>
+
+    <!-- Collapsible content -->
+    <div class="collapse navbar-collapse" id="navbarSupportedContent">
+      <ul class="navbar-nav ml-auto text-center">
+        
+          
+          
+          
+          
+            <li class="nav-item">
+              <a class="nav-link" href="/" target="_self">
+                <i class="iconfont icon-home-fill"></i>
+                <span>首页</span>
+              </a>
+            </li>
+          
+        
+          
+          
+          
+          
+            <li class="nav-item">
+              <a class="nav-link" href="/archives/" target="_self">
+                <i class="iconfont icon-archive-fill"></i>
+                <span>归档</span>
+              </a>
+            </li>
+          
+        
+          
+          
+          
+          
+            <li class="nav-item">
+              <a class="nav-link" href="/categories/" target="_self">
+                <i class="iconfont icon-category-fill"></i>
+                <span>分类</span>
+              </a>
+            </li>
+          
+        
+          
+          
+          
+          
+            <li class="nav-item">
+              <a class="nav-link" href="/tags/" target="_self">
+                <i class="iconfont icon-tags-fill"></i>
+                <span>标签</span>
+              </a>
+            </li>
+          
+        
+          
+          
+          
+          
+            <li class="nav-item">
+              <a class="nav-link" href="/about/" target="_self">
+                <i class="iconfont icon-user-fill"></i>
+                <span>关于</span>
+              </a>
+            </li>
+          
+        
+        
+          <li class="nav-item" id="search-btn">
+            <a class="nav-link" target="_self" href="javascript:;" data-toggle="modal" data-target="#modalSearch" aria-label="Search">
+              <i class="iconfont icon-search"></i>
+            </a>
+          </li>
+          
+        
+        
+          <li class="nav-item" id="color-toggle-btn">
+            <a class="nav-link" target="_self" href="javascript:;" aria-label="Color Toggle">
+              <i class="iconfont icon-dark" id="color-toggle-icon"></i>
+            </a>
+          </li>
+        
+      </ul>
+    </div>
+  </div>
+</nav>
+
+  
+
+<div id="banner" class="banner" parallax=true
+     style="background: url('/img/default.png') no-repeat center center; background-size: cover;">
+  <div class="full-bg-img">
+    <div class="mask flex-center" style="background-color: rgba(0, 0, 0, 0.3)">
+      <div class="banner-text text-center fade-in-up">
+        <div class="h2">
+          
+            <span id="subtitle" data-typed-text="redisson"></span>
+          
+        </div>
+
+        
+          
+  <div class="mt-3">
+    
+    
+      <span class="post-meta">
+        <i class="iconfont icon-date-fill" aria-hidden="true"></i>
+        <time datetime="2023-05-25 11:38" pubdate>
+          2023年5月25日 中午
+        </time>
+      </span>
+    
+  </div>
+
+  <div class="mt-1">
+    
+      <span class="post-meta mr-2">
+        <i class="iconfont icon-chart"></i>
+        
+          1.8k 字
+        
+      </span>
+    
+
+    
+      <span class="post-meta mr-2">
+        <i class="iconfont icon-clock-fill"></i>
+        
+        
+        
+          15 分钟
+        
+      </span>
+    
+
+    
+    
+  </div>
+
+
+        
+      </div>
+
+      
+    </div>
+  </div>
+</div>
+
+</div>
+
+  </header>
+
+  <main>
+    
+      
+
+<div class="container-fluid nopadding-x">
+  <div class="row nomargin-x">
+    <div class="side-col d-none d-lg-block col-lg-2">
+      
+
+    </div>
+
+    <div class="col-lg-8 nopadding-x-md">
+      <div class="container nopadding-x-md" id="board-ctn">
+        <div id="board">
+          <article class="post-content mx-auto">
+            <h1 id="seo-header">redisson</h1>
+            
+            
+              <div class="markdown-body">
+                
+                <h1 id="Redisson"><a href="#Redisson" class="headerlink" title="Redisson"></a>Redisson</h1><p>Redisson 是一个基于 Redis 的 Java 内存数据结构工具包，它不只是一个客户端，而是提供了 分布式工具的完整实现，比如：</p>
+<ul>
+<li>分布式锁 （可重入、公平、联锁、读写锁等）</li>
+<li>分布式集合、Map、List、Set、Queue、Deque</li>
+<li>分布式对象、消息队列、计数器、信号量</li>
+<li>本地缓存 + Redis 缓存的整合（类似 Caffeine + Redis）</li>
+</ul>
+<h1 id="一、使用步骤"><a href="#一、使用步骤" class="headerlink" title="一、使用步骤"></a>一、使用步骤</h1><h2 id="Maven-引入"><a href="#Maven-引入" class="headerlink" title="Maven 引入"></a>Maven 引入</h2><figure class="highlight xml"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><code class="hljs xml"><span class="hljs-tag">&lt;<span class="hljs-name">dependency</span>&gt;</span><br>    <span class="hljs-tag">&lt;<span class="hljs-name">groupId</span>&gt;</span>org.redisson<span class="hljs-tag">&lt;/<span class="hljs-name">groupId</span>&gt;</span><br>    <span class="hljs-tag">&lt;<span class="hljs-name">artifactId</span>&gt;</span>redisson-spring-boot-starter<span class="hljs-tag">&lt;/<span class="hljs-name">artifactId</span>&gt;</span><br>    <span class="hljs-tag">&lt;<span class="hljs-name">version</span>&gt;</span>3.27.2<span class="hljs-tag">&lt;/<span class="hljs-name">version</span>&gt;</span> <span class="hljs-comment">&lt;!-- 使用最新版本 --&gt;</span><br><span class="hljs-tag">&lt;/<span class="hljs-name">dependency</span>&gt;</span><br></code></pre></td></tr></table></figure>
+
+<h2 id="配置（application-yml）"><a href="#配置（application-yml）" class="headerlink" title="配置（application.yml）"></a>配置（application.yml）</h2><figure class="highlight yaml"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><code class="hljs yaml"><span class="hljs-attr">redisson:</span><br>  <span class="hljs-attr">config:</span> <span class="hljs-string">|</span><br><span class="hljs-string">    singleServerConfig:</span><br><span class="hljs-string">      address: &quot;redis://127.0.0.1:6379&quot;</span><br></code></pre></td></tr></table></figure>
+
+<h2 id="创建redis配置类"><a href="#创建redis配置类" class="headerlink" title="创建redis配置类"></a>创建redis配置类</h2><figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br></pre></td><td class="code"><pre><code class="hljs java"><span class="hljs-meta">@Configuration</span><br><span class="hljs-keyword">public</span> <span class="hljs-keyword">class</span> <span class="hljs-title class_">RedissonConfig</span> &#123;<br>    <span class="hljs-meta">@Bean</span><br>    <span class="hljs-keyword">public</span> RedissonClient <span class="hljs-title function_">redissonClient</span><span class="hljs-params">()</span> &#123;<br>        <span class="hljs-type">Config</span> <span class="hljs-variable">config</span> <span class="hljs-operator">=</span> <span class="hljs-keyword">new</span> <span class="hljs-title class_">Config</span>();<br>        config.useSingleServer()<br>            .setAddress(<span class="hljs-string">&quot;redis://101.XXX.XXX.160:6379&quot;</span>)<br>            .setPassword(<span class="hljs-string">&quot;root&quot;</span>);<br>        <span class="hljs-keyword">return</span> Redisson.create(config);<br>    &#125;<br>&#125;<br></code></pre></td></tr></table></figure>
+
+<h2 id="使用分布式锁："><a href="#使用分布式锁：" class="headerlink" title="使用分布式锁："></a>使用分布式锁：</h2><figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br></pre></td><td class="code"><pre><code class="hljs java"><span class="hljs-meta">@Autowired</span><br><span class="hljs-keyword">private</span> RedissonClient redissonClient;<br><br><span class="hljs-keyword">public</span> <span class="hljs-keyword">void</span> <span class="hljs-title function_">doSomething</span><span class="hljs-params">()</span> &#123;<br>    <span class="hljs-type">RLock</span> <span class="hljs-variable">lock</span> <span class="hljs-operator">=</span> redissonClient.getLock(<span class="hljs-string">&quot;my-lock&quot;</span>); <span class="hljs-comment">// 获取一个可从入锁</span><br>    <span class="hljs-keyword">try</span> &#123;<br>        <span class="hljs-comment">// 尝试加锁，最多等待100秒，上锁后10秒自动释放</span><br>        <span class="hljs-type">boolean</span> <span class="hljs-variable">locked</span> <span class="hljs-operator">=</span> lock.tryLock(<span class="hljs-number">100</span>, <span class="hljs-number">10</span>, TimeUnit.SECONDS);<br>        <span class="hljs-keyword">if</span> (locked) &#123;<br>            <span class="hljs-comment">// 执行业务逻辑</span><br>        &#125;<br>    &#125; <span class="hljs-keyword">catch</span> (InterruptedException e) &#123;<br>        e.printStackTrace();<br>    &#125; <span class="hljs-keyword">finally</span> &#123;<br>        <span class="hljs-keyword">if</span> (lock.isHeldByCurrentThread()) &#123;<br>            lock.unlock(); <span class="hljs-comment">// 释放锁</span><br>        &#125;<br>    &#125;<br>&#125;<br></code></pre></td></tr></table></figure>
+
+<h1 id="二、Redisson-提供的锁类型"><a href="#二、Redisson-提供的锁类型" class="headerlink" title="二、Redisson 提供的锁类型"></a>二、Redisson 提供的锁类型</h1><table>
+<thead>
+<tr>
+<th>锁类型</th>
+<th>说明</th>
+</tr>
+</thead>
+<tbody><tr>
+<td><code>RLock</code></td>
+<td>可重入锁（默认）</td>
+</tr>
+<tr>
+<td><code>FairLock</code></td>
+<td>公平锁，按顺序获取锁</td>
+</tr>
+<tr>
+<td><code>ReadWriteLock</code></td>
+<td>读写锁</td>
+</tr>
+<tr>
+<td><code>MultiLock</code></td>
+<td>联锁，多个key一起加锁</td>
+</tr>
+<tr>
+<td><code>RedLock</code></td>
+<td>Redis官方推荐的红锁算法（用于多节点）</td>
+</tr>
+</tbody></table>
+<h2 id="2-1可重入锁"><a href="#2-1可重入锁" class="headerlink" title="2.1可重入锁"></a>2.1可重入锁</h2><p>这里详细解释一下可重入锁：同一个线程在持有锁的情况下，能再次获取这把锁而不会死锁。即当线程 A 已经获取了锁，再次进入同一个锁定代码块时，如果锁是可重入的，就不会被阻塞或死锁。</p>
+<h3 id="1-为什么需要可重入锁？"><a href="#1-为什么需要可重入锁？" class="headerlink" title="1. 为什么需要可重入锁？"></a>1. 为什么需要可重入锁？</h3><p>情景 1：递归调用中再次加锁</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br></pre></td><td class="code"><pre><code class="hljs java"><span class="hljs-keyword">public</span> <span class="hljs-keyword">synchronized</span> <span class="hljs-keyword">void</span> <span class="hljs-title function_">methodA</span><span class="hljs-params">()</span> &#123;<br>    methodB(); <span class="hljs-comment">// methodB 也被 synchronized 修饰</span><br>&#125;<br><br><span class="hljs-keyword">public</span> <span class="hljs-keyword">synchronized</span> <span class="hljs-keyword">void</span> <span class="hljs-title function_">methodB</span><span class="hljs-params">()</span> &#123;<br>    <span class="hljs-comment">// ...</span><br>&#125;<br></code></pre></td></tr></table></figure>
+
+<ul>
+<li><code>methodA()</code> 和 <code>methodB()</code> 都是同步方法，当前线程调用 <code>methodA()</code> 后再进入 <code>methodB()</code>。</li>
+<li>如果锁是<strong>不可重入的</strong>，当前线程在 <code>methodB()</code> 处会自己把自己阻塞，造成死锁。</li>
+</ul>
+<p>但如果是<strong>可重入锁</strong>（如 Java 中的 <code>synchronized</code> 和 <code>ReentrantLock</code>），线程可以<strong>多次加锁</strong>，<strong>内部计数器+1</strong>，直到退出每一层时再 <strong>逐级释放锁</strong>。</p>
+<p>情景 2：一个同步方法 A 调用另一个同步方法 B（同一个类）</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br></pre></td><td class="code"><pre><code class="hljs java"><span class="hljs-keyword">public</span> <span class="hljs-keyword">class</span> <span class="hljs-title class_">Example</span> &#123;<br>    <span class="hljs-keyword">public</span> <span class="hljs-keyword">synchronized</span> <span class="hljs-keyword">void</span> <span class="hljs-title function_">methodA</span><span class="hljs-params">()</span> &#123;<br>        methodB(); <span class="hljs-comment">// 调用另一个同步方法</span><br>    &#125;<br><br>    <span class="hljs-keyword">public</span> <span class="hljs-keyword">synchronized</span> <span class="hljs-keyword">void</span> <span class="hljs-title function_">methodB</span><span class="hljs-params">()</span> &#123;<br>        System.out.println(<span class="hljs-string">&quot;Inside methodB&quot;</span>);<br>    &#125;<br>&#125;<br></code></pre></td></tr></table></figure>
+
+<ul>
+<li>这两个方法都锁的是同一个对象（默认是 <code>this</code>）。</li>
+<li>当前线程调用 <code>methodA()</code> 并持有 <code>this</code> 的锁。</li>
+<li>接着调用 <code>methodB()</code>，也需要 <code>this</code> 的锁。</li>
+<li><strong>由于是可重入锁，线程已经持有，所以可以“再次进入”</strong>。</li>
+</ul>
+<p>情景 3：子类调用父类的同步方法</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br></pre></td><td class="code"><pre><code class="hljs java"><span class="hljs-keyword">class</span> <span class="hljs-title class_">Parent</span> &#123;<br>    <span class="hljs-keyword">public</span> <span class="hljs-keyword">synchronized</span> <span class="hljs-keyword">void</span> <span class="hljs-title function_">doSomething</span><span class="hljs-params">()</span> &#123;<br>        System.out.println(<span class="hljs-string">&quot;Parent&quot;</span>);<br>    &#125;<br>&#125;<br><br><span class="hljs-keyword">class</span> <span class="hljs-title class_">Child</span> <span class="hljs-keyword">extends</span> <span class="hljs-title class_">Parent</span> &#123;<br>    <span class="hljs-meta">@Override</span><br>    <span class="hljs-keyword">public</span> <span class="hljs-keyword">synchronized</span> <span class="hljs-keyword">void</span> <span class="hljs-title function_">doSomething</span><span class="hljs-params">()</span> &#123;<br>        <span class="hljs-built_in">super</span>.doSomething(); <span class="hljs-comment">// 父类方法也要获取锁</span><br>        System.out.println(<span class="hljs-string">&quot;Child&quot;</span>);<br>    &#125;<br>&#125;<br></code></pre></td></tr></table></figure>
+
+<ul>
+<li>子类和父类方法都使用了 <code>synchronized</code>，<strong>锁的对象仍是同一个：当前实例（this）</strong>。</li>
+<li>当调用子类方法时，线程先获得 <code>this</code> 锁，然后再调用 <code>super.methodParent()</code>。</li>
+<li>父类方法也要获取 <code>this</code> 的锁。</li>
+<li><strong>可重入锁保证了子类可以顺利进入父类的同步方法</strong>，不会死锁。</li>
+</ul>
+<h3 id="2-可重入锁的底层（同一个线程访问同一把锁可以直接放行）"><a href="#2-可重入锁的底层（同一个线程访问同一把锁可以直接放行）" class="headerlink" title="2.可重入锁的底层（同一个线程访问同一把锁可以直接放行）"></a>2.可重入锁的底层（同一个线程访问同一把锁可以直接放行）</h3><ul>
+<li>内部维护一个 <strong>锁计数器</strong> 和 <strong>持有锁的线程标识</strong>。</li>
+<li>当线程再次请求这把锁，判断当前线程标识，检测到自己再次加锁，计数器 +1，不会发生阻塞。</li>
+<li>释放锁时，计数器 -1；直到为 0，锁才真正释放</li>
+</ul>
+<h2 id="2-2公平锁"><a href="#2-2公平锁" class="headerlink" title="2.2公平锁"></a>2.2公平锁</h2><p>公平锁的特点是：</p>
+<ul>
+<li><strong>按照线程请求锁的先后顺序来获取锁</strong>。</li>
+<li>类似于排队买票，谁先来谁先服务。</li>
+<li>后来的线程不能插队。</li>
+</ul>
+<p>代码：</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><code class="hljs java"><span class="hljs-type">RLock</span> <span class="hljs-variable">fairLock</span> <span class="hljs-operator">=</span> redissonClient.getFairLock(<span class="hljs-string">&quot;my-fair-lock&quot;</span>);<br></code></pre></td></tr></table></figure>
+
+<p>Redisson 的公平锁在 Redis 中维护一个<strong>等待队列</strong>：</p>
+<ol>
+<li>所有请求锁的线程会按顺序加入一个 Redis 队列。</li>
+<li>当前持有锁的线程释放锁后，下一个排队的线程才能获得锁。</li>
+<li>Redisson 会定时检查等待队列和锁状态，决定是否唤醒下一个等待者</li>
+</ol>
+<h2 id="2-3读写锁（读锁和写锁）"><a href="#2-3读写锁（读锁和写锁）" class="headerlink" title="2.3读写锁（读锁和写锁）"></a>2.3读写锁（读锁和写锁）</h2><p><strong>读写锁（ReadWriteLock）</strong> 是一种更细粒度的锁机制，它将锁分成两个部分：</p>
+<ul>
+<li><strong>读锁（共享锁readLock()）</strong>：允许多个线程同时读，但不能写。</li>
+<li><strong>写锁（独占锁writeLock()）</strong>：只允许一个线程写，写时不允许其他线程读或写。</li>
+</ul>
+<p>Redisson 的读写锁底层通过 Redis + Lua 脚本实现：</p>
+<ol>
+<li>读锁使用一个计数器维护当前读线程数量。</li>
+<li>写锁是一个独占键，只有当没有读锁存在时才能成功加写锁。</li>
+<li>使用 Redis 的 <code>setnx</code>、<code>get</code>、<code>incr</code> 等命令，并配合 Lua 脚本做原子性判断</li>
+</ol>
+<h2 id="2-4联锁"><a href="#2-4联锁" class="headerlink" title="2.4联锁"></a>2.4联锁</h2><p><strong>联锁（Redisson MultiLock）</strong> 是一种同时对<strong>多个 Redis 实例的锁对象加锁</strong>的机制，只有当<strong>所有的锁都加成功</strong>，联锁才算加锁成功。</p>
+<p>🚨 用于 Redis 多节点环境中，保证多个锁资源都被当前线程拥有，防止部分锁成功、部分失败造成的不一致。（多个资源，每个资源在不同 Redis 上）</p>
+<h3 id="1-为什么需要联锁？"><a href="#1-为什么需要联锁？" class="headerlink" title="1. 为什么需要联锁？"></a>1. 为什么需要联锁？</h3><p>举个例子：</p>
+<p>假如部署了多个 Redis 节点用于冗余（不是 Redis Cluster）</p>
+<ul>
+<li>节点 A、B、C 上分别都有一个分布式锁；</li>
+<li>你希望：<strong>只有当 A、B、C 三个锁都加锁成功后，才继续执行后续逻辑</strong>，否则回滚。</li>
+</ul>
+<h3 id="2-使用示列"><a href="#2-使用示列" class="headerlink" title="2.使用示列"></a>2.使用示列</h3><figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br></pre></td><td class="code"><pre><code class="hljs java"><span class="hljs-type">RLock</span> <span class="hljs-variable">lock1</span> <span class="hljs-operator">=</span> redissonClient.getLock(<span class="hljs-string">&quot;lock1&quot;</span>);<br><span class="hljs-type">RLock</span> <span class="hljs-variable">lock2</span> <span class="hljs-operator">=</span> redissonClient.getLock(<span class="hljs-string">&quot;lock2&quot;</span>);<br><span class="hljs-type">RLock</span> <span class="hljs-variable">lock3</span> <span class="hljs-operator">=</span> redissonClient.getLock(<span class="hljs-string">&quot;lock3&quot;</span>);<br><br><span class="hljs-comment">// 创建联锁对象</span><br><span class="hljs-type">RLock</span> <span class="hljs-variable">multiLock</span> <span class="hljs-operator">=</span> <span class="hljs-keyword">new</span> <span class="hljs-title class_">RedissonMultiLock</span>(lock1, lock2, lock3);<br><br><span class="hljs-comment">// 加锁</span><br>multiLock.lock();<br><span class="hljs-comment">// 解锁</span><br>multiLock.unlock();<br></code></pre></td></tr></table></figure>
+
+<h3 id="3-底层实现"><a href="#3-底层实现" class="headerlink" title="3.底层实现"></a>3.底层实现</h3><ul>
+<li>Redisson 会依次尝试获取传入的每个锁（即多个 Redis 实例的锁）。</li>
+<li>只要有一个失败，就立即释放之前成功加上的锁。</li>
+<li>所有锁加成功后，才算联锁加锁成功。</li>
+<li>释放锁时，会依次释放所有的子锁。</li>
+</ul>
+<h2 id="2-5看门狗机制"><a href="#2-5看门狗机制" class="headerlink" title="2.5看门狗机制"></a>2.5看门狗机制</h2><p>当你通过 Redisson 加锁时，如果没有指定锁的<strong>过期时间</strong>，Redisson 会自动为这把锁设置一个默认的过期时间（默认 <strong>30秒</strong>），并且会启动一个“看门狗定时任务”。<br>作用：<strong>定期自动延长锁的过期时间</strong>，防止业务线程未执行完就锁被释放。</p>
+<h3 id="1-默认行为"><a href="#1-默认行为" class="headerlink" title="1.默认行为"></a>1.默认行为</h3><ul>
+<li>加锁成功后，Redisson 会为锁设置一个 default <strong>30秒过期时间</strong></li>
+<li>然后开启一个<strong>后台定时任务</strong>，每隔 <strong>10秒</strong> 检查是否还持有锁</li>
+<li>如果当前线程还持有锁，<strong>会自动将锁的过期时间重置为30秒</strong></li>
+</ul>
+<p>这个过程会一直持续，直到<strong>手动解锁</strong>或线程结束。</p>
+<h3 id="2-为什么需要看门狗？"><a href="#2-为什么需要看门狗？" class="headerlink" title="2.为什么需要看门狗？"></a>2.为什么需要看门狗？</h3><p>假如没有看门狗机制：</p>
+<ol>
+<li>给锁设置 10 秒过期时间</li>
+<li>某个业务逻辑执行时间超过了 10 秒</li>
+<li>锁到期被释放</li>
+<li>其他线程获取了这把锁，<strong>导致数据被并发修改，发生严重问题</strong></li>
+</ol>
+<p>有了看门狗：</p>
+<p>即使忘了设置合适的过期时间，<strong>Redisson 会自动帮你续期，避免锁失效引发并发问题。</strong></p>
+
+                
+              </div>
+            
+            <hr/>
+            <div>
+              <div class="post-metas my-3">
+  
+    <div class="post-meta mr-3 d-flex align-items-center">
+      <i class="iconfont icon-category"></i>
+      
+
+<span class="category-chains">
+  
+  
+    
+      <span class="category-chain">
+        
+  <a href="/categories/%E6%8A%80%E6%9C%AF/" class="category-chain-item">技术</a>
+  
+  
+
+      </span>
+    
+  
+</span>
+
+    </div>
+  
+  
+    <div class="post-meta">
+      <i class="iconfont icon-tags"></i>
+      
+        <a href="/tags/%E5%B9%B6%E5%8F%91/" class="print-no-link">#并发</a>
+      
+        <a href="/tags/%E9%94%81/" class="print-no-link">#锁</a>
+      
+        <a href="/tags/%E7%BC%93%E5%AD%98/" class="print-no-link">#缓存</a>
+      
+    </div>
+  
+</div>
+
+
+              
+  
+
+  <div class="license-box my-3">
+    <div class="license-title">
+      <div>redisson</div>
+      <div>http://example.com/2023/05/25/redisson/</div>
+    </div>
+    <div class="license-meta">
+      
+        <div class="license-meta-item">
+          <div>作者</div>
+          <div>Wjzqc</div>
+        </div>
+      
+      
+        <div class="license-meta-item license-meta-date">
+          <div>发布于</div>
+          <div>2023年5月25日</div>
+        </div>
+      
+      
+      
+        <div class="license-meta-item">
+          <div>许可协议</div>
+          <div>
+            
+              
+              
+                <a class="print-no-link" target="_blank" href="https://creativecommons.org/licenses/by/4.0/">
+                  <span class="hint--top hint--rounded" aria-label="BY - 署名">
+                    <i class="iconfont icon-cc-by"></i>
+                  </span>
+                </a>
+              
+            
+          </div>
+        </div>
+      
+    </div>
+    <div class="license-icon iconfont"></div>
+  </div>
+
+
+
+              
+                <div class="post-prevnext my-3">
+                  <article class="post-prev col-6">
+                    
+                    
+                      <a href="/2023/06/09/%E6%95%B0%E6%8D%AE%E5%BA%93%E4%BC%98%E5%8C%96/" title="数据库优化">
+                        <i class="iconfont icon-arrowleft"></i>
+                        <span class="hidden-mobile">数据库优化</span>
+                        <span class="visible-mobile">上一篇</span>
+                      </a>
+                    
+                  </article>
+                  <article class="post-next col-6">
+                    
+                    
+                      <a href="/2023/05/18/redis/" title="redis">
+                        <span class="hidden-mobile">redis</span>
+                        <span class="visible-mobile">下一篇</span>
+                        <i class="iconfont icon-arrowright"></i>
+                      </a>
+                    
+                  </article>
+                </div>
+              
+            </div>
+
+            
+          </article>
+        </div>
+      </div>
+    </div>
+
+    <div class="side-col d-none d-lg-block col-lg-2">
+      
+  <aside class="sidebar" style="margin-left: -1rem">
+    <div id="toc">
+  <p class="toc-header">
+    <i class="iconfont icon-list"></i>
+    <span>目录</span>
+  </p>
+  <div class="toc-body" id="toc-body"></div>
+</div>
+
+
+
+  </aside>
+
+
+    </div>
+  </div>
+</div>
+
+
+
+
+
+  
+
+
+
+  
+
+
+
+  
+
+
+
+  
+
+
+
+  
+
+
+
+
+
+
+
+    
+
+    
+      <a id="scroll-top-button" aria-label="TOP" href="#" role="button">
+        <i class="iconfont icon-arrowup" aria-hidden="true"></i>
+      </a>
+    
+
+    
+      <div class="modal fade" id="modalSearch" tabindex="-1" role="dialog" aria-labelledby="ModalLabel"
+     aria-hidden="true">
+  <div class="modal-dialog modal-dialog-scrollable modal-lg" role="document">
+    <div class="modal-content">
+      <div class="modal-header text-center">
+        <h4 class="modal-title w-100 font-weight-bold">搜索</h4>
+        <button type="button" id="local-search-close" class="close" data-dismiss="modal" aria-label="Close">
+          <span aria-hidden="true">&times;</span>
+        </button>
+      </div>
+      <div class="modal-body mx-3">
+        <div class="md-form mb-5">
+          <input type="text" id="local-search-input" class="form-control validate">
+          <label data-error="x" data-success="v" for="local-search-input">关键词</label>
+        </div>
+        <div class="list-group" id="local-search-result"></div>
+      </div>
+    </div>
+  </div>
+</div>
+
+    
+
+    
+  </main>
+
+  <footer>
+    <div class="footer-inner">
+  
+    <div class="footer-content">
+       <a href="" target="_blank" rel="nofollow noopener"><span>Zqc</span></a> <i class="iconfont icon-love"></i> <a href="" target="_blank" rel="nofollow noopener"><span>Zmx</span></a> 
+    </div>
+  
+  
+  
+</div>
+
+  </footer>
+
+  <!-- Scripts -->
+  
+  <script  src="https://lib.baomitu.com/nprogress/0.2.0/nprogress.min.js" ></script>
+  <link  rel="stylesheet" href="https://lib.baomitu.com/nprogress/0.2.0/nprogress.min.css" />
+
+  <script>
+    NProgress.configure({"showSpinner":false,"trickleSpeed":100})
+    NProgress.start()
+    window.addEventListener('load', function() {
+      NProgress.done();
+    })
+  </script>
+
+
+<script  src="https://lib.baomitu.com/jquery/3.6.4/jquery.min.js" ></script>
+<script  src="https://lib.baomitu.com/twitter-bootstrap/4.6.1/js/bootstrap.min.js" ></script>
+<script  src="/js/events.js" ></script>
+<script  src="/js/plugins.js" ></script>
+
+
+  <script  src="https://lib.baomitu.com/typed.js/2.0.12/typed.min.js" ></script>
+  <script>
+    (function (window, document) {
+      var typing = Fluid.plugins.typing;
+      var subtitle = document.getElementById('subtitle');
+      if (!subtitle || !typing) {
+        return;
+      }
+      var text = subtitle.getAttribute('data-typed-text');
+      
+        typing(text);
+      
+    })(window, document);
+  </script>
+
+
+
+
+  
+    <script  src="/js/img-lazyload.js" ></script>
+  
+
+
+
+
+  
+<script>
+  Fluid.utils.createScript('https://lib.baomitu.com/tocbot/4.20.1/tocbot.min.js', function() {
+    var toc = jQuery('#toc');
+    if (toc.length === 0 || !window.tocbot) { return; }
+    var boardCtn = jQuery('#board-ctn');
+    var boardTop = boardCtn.offset().top;
+
+    window.tocbot.init(Object.assign({
+      tocSelector     : '#toc-body',
+      contentSelector : '.markdown-body',
+      linkClass       : 'tocbot-link',
+      activeLinkClass : 'tocbot-active-link',
+      listClass       : 'tocbot-list',
+      isCollapsedClass: 'tocbot-is-collapsed',
+      collapsibleClass: 'tocbot-is-collapsible',
+      scrollSmooth    : true,
+      includeTitleTags: true,
+      headingsOffset  : -boardTop,
+    }, CONFIG.toc));
+    if (toc.find('.toc-list-item').length > 0) {
+      toc.css('visibility', 'visible');
+    }
+
+    Fluid.events.registerRefreshCallback(function() {
+      if ('tocbot' in window) {
+        tocbot.refresh();
+        var toc = jQuery('#toc');
+        if (toc.length === 0 || !tocbot) {
+          return;
+        }
+        if (toc.find('.toc-list-item').length > 0) {
+          toc.css('visibility', 'visible');
+        }
+      }
+    });
+  });
+</script>
+
+
+  <script src=https://lib.baomitu.com/clipboard.js/2.0.11/clipboard.min.js></script>
+
+  <script>Fluid.plugins.codeWidget();</script>
+
+
+  
+<script>
+  Fluid.utils.createScript('https://lib.baomitu.com/anchor-js/5.0.0/anchor.min.js', function() {
+    window.anchors.options = {
+      placement: CONFIG.anchorjs.placement,
+      visible  : CONFIG.anchorjs.visible
+    };
+    if (CONFIG.anchorjs.icon) {
+      window.anchors.options.icon = CONFIG.anchorjs.icon;
+    }
+    var el = (CONFIG.anchorjs.element || 'h1,h2,h3,h4,h5,h6').split(',');
+    var res = [];
+    for (var item of el) {
+      res.push('.markdown-body > ' + item.trim());
+    }
+    if (CONFIG.anchorjs.placement === 'left') {
+      window.anchors.options.class = 'anchorjs-link-left';
+    }
+    window.anchors.add(res.join(', '));
+
+    Fluid.events.registerRefreshCallback(function() {
+      if ('anchors' in window) {
+        anchors.removeAll();
+        var el = (CONFIG.anchorjs.element || 'h1,h2,h3,h4,h5,h6').split(',');
+        var res = [];
+        for (var item of el) {
+          res.push('.markdown-body > ' + item.trim());
+        }
+        if (CONFIG.anchorjs.placement === 'left') {
+          anchors.options.class = 'anchorjs-link-left';
+        }
+        anchors.add(res.join(', '));
+      }
+    });
+  });
+</script>
+
+
+  
+<script>
+  Fluid.utils.createScript('https://lib.baomitu.com/fancybox/3.5.7/jquery.fancybox.min.js', function() {
+    Fluid.plugins.fancyBox();
+  });
+</script>
+
+
+  <script>Fluid.plugins.imageCaption();</script>
+
+  <script  src="/js/local-search.js" ></script>
+
+
+
+
+
+<!-- 主题的启动项，将它保持在最底部 -->
+<!-- the boot of the theme, keep it at the bottom -->
+<script  src="/js/boot.js" ></script>
+
+
+  
+
+  <noscript>
+    <div class="noscript-warning">博客在允许 JavaScript 运行的环境下浏览效果更佳</div>
+  </noscript>
+</body>
+</html>

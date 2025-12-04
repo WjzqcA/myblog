@@ -1,0 +1,782 @@
+
+
+<!DOCTYPE html>
+<html lang="zh-CN" data-default-color-scheme=auto>
+
+
+
+<head>
+  <meta charset="UTF-8">
+
+  <link rel="apple-touch-icon" sizes="76x76" href="/img/fluid.png">
+  <link rel="icon" href="/img/fluid.png">
+  
+
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=5.0, shrink-to-fit=no">
+  <meta http-equiv="x-ua-compatible" content="ie=edge">
+  
+  <meta name="theme-color" content="#2f4154">
+  <meta name="author" content="Wjzqc">
+  <meta name="keywords" content="">
+  
+    <meta name="description" content="记录一下，将静态博客hexo部署到服务器的过程。">
+<meta property="og:type" content="article">
+<meta property="og:title" content="服务器部署静态blog">
+<meta property="og:url" content="http://example.com/2023/07/11/%E6%9C%8D%E5%8A%A1%E5%99%A8%E9%83%A8%E7%BD%B2%E9%9D%99%E6%80%81blog/index.html">
+<meta property="og:site_name" content="Wjzqc&#39;s Blog">
+<meta property="og:description" content="记录一下，将静态博客hexo部署到服务器的过程。">
+<meta property="og:locale" content="zh_CN">
+<meta property="article:published_time" content="2023-07-11T05:44:26.000Z">
+<meta property="article:modified_time" content="2025-12-04T07:41:50.224Z">
+<meta property="article:author" content="Wjzqc">
+<meta property="article:tag" content="云服务器">
+<meta name="twitter:card" content="summary_large_image">
+  
+  
+  
+  <title>服务器部署静态blog - Wjzqc&#39;s Blog</title>
+
+  <link  rel="stylesheet" href="https://lib.baomitu.com/twitter-bootstrap/4.6.1/css/bootstrap.min.css" />
+
+
+
+  <link  rel="stylesheet" href="https://lib.baomitu.com/github-markdown-css/4.0.0/github-markdown.min.css" />
+
+  <link  rel="stylesheet" href="https://lib.baomitu.com/hint.css/2.7.0/hint.min.css" />
+
+  <link  rel="stylesheet" href="https://lib.baomitu.com/fancybox/3.5.7/jquery.fancybox.min.css" />
+
+
+
+<!-- 主题依赖的图标库，不要自行修改 -->
+<!-- Do not modify the link that theme dependent icons -->
+
+<link rel="stylesheet" href="//at.alicdn.com/t/c/font_1749284_5i9bdhy70f8.css">
+
+
+
+<link rel="stylesheet" href="//at.alicdn.com/t/c/font_1736178_k526ubmyhba.css">
+
+
+<link  rel="stylesheet" href="/css/main.css" />
+
+
+  <link id="highlight-css" rel="stylesheet" href="/css/highlight.css" />
+  
+    <link id="highlight-css-dark" rel="stylesheet" href="/css/highlight-dark.css" />
+  
+
+
+
+
+  <script id="fluid-configs">
+    var Fluid = window.Fluid || {};
+    Fluid.ctx = Object.assign({}, Fluid.ctx)
+    var CONFIG = {"hostname":"example.com","root":"/","version":"1.9.8","typing":{"enable":true,"typeSpeed":70,"cursorChar":"_","loop":false,"scope":[]},"anchorjs":{"enable":true,"element":"h1,h2,h3,h4,h5,h6","placement":"left","visible":"hover","icon":""},"progressbar":{"enable":true,"height_px":3,"color":"#29d","options":{"showSpinner":false,"trickleSpeed":100}},"code_language":{"enable":true,"default":"TEXT"},"copy_btn":true,"image_caption":{"enable":true},"image_zoom":{"enable":true,"img_url_replace":["",""]},"toc":{"enable":true,"placement":"right","headingSelector":"h1,h2,h3,h4,h5,h6","collapseDepth":0},"lazyload":{"enable":true,"loading_img":"/img/loading.gif","onlypost":false,"offset_factor":2},"web_analytics":{"enable":false,"follow_dnt":true,"baidu":null,"google":{"measurement_id":null},"tencent":{"sid":null,"cid":null},"leancloud":{"app_id":null,"app_key":null,"server_url":null,"path":"window.location.pathname","ignore_local":false},"umami":{"src":null,"website_id":null,"domains":null,"start_time":"2024-01-01T00:00:00.000Z","token":null,"api_server":null}},"search_path":"/local-search.xml","include_content_in_search":true};
+
+    if (CONFIG.web_analytics.follow_dnt) {
+      var dntVal = navigator.doNotTrack || window.doNotTrack || navigator.msDoNotTrack;
+      Fluid.ctx.dnt = dntVal && (dntVal.startsWith('1') || dntVal.startsWith('yes') || dntVal.startsWith('on'));
+    }
+  </script>
+  <script  src="/js/utils.js" ></script>
+  <script  src="/js/color-schema.js" ></script>
+  
+
+
+  
+<meta name="generator" content="Hexo 7.3.0"></head>
+
+
+<body>
+  
+
+  <header>
+    
+
+<div class="header-inner" style="height: 70vh;">
+  <nav id="navbar" class="navbar fixed-top  navbar-expand-lg navbar-dark scrolling-navbar">
+  <div class="container">
+    <a class="navbar-brand" href="/">
+      <strong>Wjzqc</strong>
+    </a>
+
+    <button id="navbar-toggler-btn" class="navbar-toggler" type="button" data-toggle="collapse"
+            data-target="#navbarSupportedContent"
+            aria-controls="navbarSupportedContent" aria-expanded="false" aria-label="Toggle navigation">
+      <div class="animated-icon"><span></span><span></span><span></span></div>
+    </button>
+
+    <!-- Collapsible content -->
+    <div class="collapse navbar-collapse" id="navbarSupportedContent">
+      <ul class="navbar-nav ml-auto text-center">
+        
+          
+          
+          
+          
+            <li class="nav-item">
+              <a class="nav-link" href="/" target="_self">
+                <i class="iconfont icon-home-fill"></i>
+                <span>首页</span>
+              </a>
+            </li>
+          
+        
+          
+          
+          
+          
+            <li class="nav-item">
+              <a class="nav-link" href="/archives/" target="_self">
+                <i class="iconfont icon-archive-fill"></i>
+                <span>归档</span>
+              </a>
+            </li>
+          
+        
+          
+          
+          
+          
+            <li class="nav-item">
+              <a class="nav-link" href="/categories/" target="_self">
+                <i class="iconfont icon-category-fill"></i>
+                <span>分类</span>
+              </a>
+            </li>
+          
+        
+          
+          
+          
+          
+            <li class="nav-item">
+              <a class="nav-link" href="/tags/" target="_self">
+                <i class="iconfont icon-tags-fill"></i>
+                <span>标签</span>
+              </a>
+            </li>
+          
+        
+          
+          
+          
+          
+            <li class="nav-item">
+              <a class="nav-link" href="/about/" target="_self">
+                <i class="iconfont icon-user-fill"></i>
+                <span>关于</span>
+              </a>
+            </li>
+          
+        
+        
+          <li class="nav-item" id="search-btn">
+            <a class="nav-link" target="_self" href="javascript:;" data-toggle="modal" data-target="#modalSearch" aria-label="Search">
+              <i class="iconfont icon-search"></i>
+            </a>
+          </li>
+          
+        
+        
+          <li class="nav-item" id="color-toggle-btn">
+            <a class="nav-link" target="_self" href="javascript:;" aria-label="Color Toggle">
+              <i class="iconfont icon-dark" id="color-toggle-icon"></i>
+            </a>
+          </li>
+        
+      </ul>
+    </div>
+  </div>
+</nav>
+
+  
+
+<div id="banner" class="banner" parallax=true
+     style="background: url('/img/default.png') no-repeat center center; background-size: cover;">
+  <div class="full-bg-img">
+    <div class="mask flex-center" style="background-color: rgba(0, 0, 0, 0.3)">
+      <div class="banner-text text-center fade-in-up">
+        <div class="h2">
+          
+            <span id="subtitle" data-typed-text="服务器部署静态blog"></span>
+          
+        </div>
+
+        
+          
+  <div class="mt-3">
+    
+    
+      <span class="post-meta">
+        <i class="iconfont icon-date-fill" aria-hidden="true"></i>
+        <time datetime="2023-07-11 13:44" pubdate>
+          2023年7月11日 下午
+        </time>
+      </span>
+    
+  </div>
+
+  <div class="mt-1">
+    
+      <span class="post-meta mr-2">
+        <i class="iconfont icon-chart"></i>
+        
+          2.1k 字
+        
+      </span>
+    
+
+    
+      <span class="post-meta mr-2">
+        <i class="iconfont icon-clock-fill"></i>
+        
+        
+        
+          18 分钟
+        
+      </span>
+    
+
+    
+    
+  </div>
+
+
+        
+      </div>
+
+      
+    </div>
+  </div>
+</div>
+
+</div>
+
+  </header>
+
+  <main>
+    
+      
+
+<div class="container-fluid nopadding-x">
+  <div class="row nomargin-x">
+    <div class="side-col d-none d-lg-block col-lg-2">
+      
+
+    </div>
+
+    <div class="col-lg-8 nopadding-x-md">
+      <div class="container nopadding-x-md" id="board-ctn">
+        <div id="board">
+          <article class="post-content mx-auto">
+            <h1 id="seo-header">服务器部署静态blog</h1>
+            
+            
+              <div class="markdown-body">
+                
+                <h1 id="服务器部署静态博客"><a href="#服务器部署静态博客" class="headerlink" title="服务器部署静态博客"></a>服务器部署静态博客</h1><h1 id="一、在工作台配置DNS解析"><a href="#一、在工作台配置DNS解析" class="headerlink" title="一、在工作台配置DNS解析"></a>一、在工作台配置DNS解析</h1><p>这里主要是将域名和IP地址构建起映射，进行让域名能够指向我们的公网ip</p>
+<p>记录类型选择A（将域名指向一个IPV4地址），记录值写公网IP，ttl是本地缓存的DNS过期时间（如果过期了就去别的运营商的DNS服务器查找）</p>
+<h1 id="二、nginx配置"><a href="#二、nginx配置" class="headerlink" title="二、nginx配置"></a>二、nginx配置</h1><h2 id="2-1Nginx的作用"><a href="#2-1Nginx的作用" class="headerlink" title="2.1Nginx的作用"></a>2.1Nginx的作用</h2><p>先说一下用户访问服务器的流程：用户 → 域名解析 → 服务器80&#x2F;443端口 → Nginx接收请求 → 匹配站点配置 → 处理请求（静态文件&#x2F;反向代理） → 返回响应 → 用户浏览器渲染。</p>
+<p>在这里，Nginx主要充当域名路由的作用。Nginx 接收请求后，会解析请求头中的「Host 字段」（即 blog.zjanson.top），然后遍历 &#x2F;etc&#x2F;nginx&#x2F;sites-enabled&#x2F; 下的所有站点配置，找到 server_name 与 Host 字段匹配的配置文件。（简单来说就是让 blog.zjanson.top 映射到一个本地目录，通过 Nginx 将静态文件返回给浏览器）</p>
+<p><strong>关键原理：</strong>一台服务器可以部署多个网站（如同时部署 blog.zjanson.top 和 docs.zjanson.top），Nginx 通过 server_name 实现「基于域名的虚拟主机」，让不同域名的请求对应不同的网站目录或服务。</p>
+<p>场景：路由分为两种场景，一个是静态资源服务，还有一个是动态资源服务。这里主要记录一下静态，Nginx的一个主要优点就是可以直接处理静态资源，它还可以根据配置通过返回特定的 HTTP 响应头，指导你的浏览器将静态资源缓存到本地。</p>
+<h2 id="2-2创建-Nginx-的站点配置文件"><a href="#2-2创建-Nginx-的站点配置文件" class="headerlink" title="2.2创建 Nginx 的站点配置文件"></a>2.2创建 Nginx 的站点配置文件</h2><p>Nginx 的站点配置文件就是 Nginx 用来“识别并服务某个网站”的配置文件，它里面的规则用来告诉 Nginx一个网站怎么运行。（因为nginx要路由到多个网站，所以每一个网站都需要在配置文件中配置一个单独的 server 块）</p>
+<p>为了管理清晰，Ubuntu系统把站点配置分成两个目录：</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><code class="hljs java">/etc/nginx/sites-available/   # 放所有站点配置文件（静态，未启用）<br>/etc/nginx/sites-enabled/     # 这里是实际启用的网站（软链接）<br>#Nginx 实际只加载 sites-enabled 目录内容。<br></code></pre></td></tr></table></figure>
+
+<p>sites-available下存放的网点可以理解为“候选网站”，而后续会将sites-enabled&#x2F;和和available下指定的网点进行软连接，也就是只有软连接的网点才会被nginx代理启用。</p>
+<p>现在开始设置配置文件：</p>
+<p>一般会为每一个网点单独在sites-available下创建一个配置文件</p>
+<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><code class="hljs bash"><span class="hljs-built_in">sudo</span> nano /etc/nginx/sites-available/blog.zjanson.top<br><span class="hljs-comment">#这里用的是nano打开的文件，保存退出（Ctrl+O，Enter，Ctrl+X）</span><br></code></pre></td></tr></table></figure>
+
+<p>输入以下内容</p>
+<figure class="highlight json"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br></pre></td><td class="code"><pre><code class="hljs json">server <span class="hljs-punctuation">&#123;</span><br>    listen <span class="hljs-number">80</span>;<br>    server_name blog.zjanson.top;<br><br>    root /var/www/myblog;  # 博客目录，务必写绝对路径<span class="hljs-punctuation">,</span>注意不要放到root下<br>    index index.html;<br><br>    location / <span class="hljs-punctuation">&#123;</span><br>        try_files $uri $uri/ = <span class="hljs-number">404</span>;<br>    <span class="hljs-punctuation">&#125;</span><br><br>    location ~ /\\. <span class="hljs-punctuation">&#123;</span><br>        deny all;<br>    <span class="hljs-punctuation">&#125;</span><br><span class="hljs-punctuation">&#125;</span><br></code></pre></td></tr></table></figure>
+
+<p>如果访问站点报错，可以查看nginx的log看一下什么错误（&#x2F;var&#x2F;log&#x2F;nginx&#x2F;error.log）</p>
+<h2 id="2-3启用站点"><a href="#2-3启用站点" class="headerlink" title="2.3启用站点"></a>2.3启用站点</h2><p>软连接：</p>
+<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><code class="hljs bash"><span class="hljs-built_in">sudo</span> <span class="hljs-built_in">ln</span> -s /etc/nginx/sites-available/blog.zjanson.top /etc/nginx/sites-enabled/<br></code></pre></td></tr></table></figure>
+
+<p>检查语法： <strong>检查 Nginx 配置文件是否有语法错误</strong> 的命令，当修改任何 Nginx 配置文件时都需要检查一遍配置文件是否有错误</p>
+<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><code class="hljs bash"><span class="hljs-built_in">sudo</span> nginx -t<br></code></pre></td></tr></table></figure>
+
+<p>如果没问题重启Nginx：</p>
+<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><code class="hljs bash"><span class="hljs-built_in">sudo</span> systemctl reload nginx<br></code></pre></td></tr></table></figure>
+
+<h1 id="三、动态更新网站"><a href="#三、动态更新网站" class="headerlink" title="三、动态更新网站"></a>三、动态更新网站</h1><p>现在已经将静态blog部署到了服务器，但是我们想要对我们的博客进行更新，还需要进一步的配置。</p>
+<h2 id="3-1静态博客动态更新的原理"><a href="#3-1静态博客动态更新的原理" class="headerlink" title="3.1静态博客动态更新的原理"></a>3.1静态博客动态更新的原理</h2><p>Hexo 本质上是 <strong>静态网站生成器</strong>，每次写完新文章后，需要执行：</p>
+<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><code class="hljs bash">hexo clean<br>hexo g<br></code></pre></td></tr></table></figure>
+
+<p>生成新的 public&#x2F; 静态文件，然后 Nginx 才能把最新内容展示出来。</p>
+<p><strong>所以动态更新其实就是：</strong></p>
+<ol>
+<li>生成新的静态文件</li>
+<li>替换 Nginx 的根目录文件</li>
+<li>Nginx 自动提供最新页面（因为 Nginx 本身直接读取文件，不缓存 HTML）</li>
+</ol>
+<p>可以采用Git + CI 自动部署的方式实现</p>
+<h2 id="3-2实现自动部署（git-CI）"><a href="#3-2实现自动部署（git-CI）" class="headerlink" title="3.2实现自动部署（git+CI）"></a>3.2实现自动部署（git+CI）</h2><p>目标：当在本地写完文章并 git push 到远程仓库后，服务器能自动更新 Hexo 生成的静态文件，并通过 Nginx 提供最新页面。</p>
+<p>核心原理：</p>
+<ol>
+<li><strong>Git 仓库</strong>：存放 Hexo 源码（包括文章、主题、配置）。</li>
+<li><strong>Hook</strong>：监听 Git 仓库的 push 事件，触发自动部署脚本。</li>
+<li><strong>部署脚本</strong>：执行 hexo clean &amp;&amp; hexo g 生成静态文件，然后替换 Nginx 的 root 文件。</li>
+<li><strong>Nginx</strong>：直接托管最新的静态文件，无需重启（只要文件被替换，访问就更新了）</li>
+</ol>
+<h3 id="3-2-1本地初始化git并提交"><a href="#3-2-1本地初始化git并提交" class="headerlink" title="3.2.1本地初始化git并提交"></a>3.2.1本地初始化git并提交</h3><figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br></pre></td><td class="code"><pre><code class="hljs bash"><span class="hljs-built_in">cd</span> study/myblog<br>git init       <span class="hljs-comment"># 如果本地还没 git</span><br>git add .      <span class="hljs-comment">#把博客文件（源码、文章、主题等）添加到 Git 暂存区</span><br>git commit -m <span class="hljs-string">&quot;init&quot;</span>  <span class="hljs-comment">#提交到本地 Git 仓库</span><br>git remote add origin git@github.com:yourusername/yourblog.git  <span class="hljs-comment">#绑定远程仓库地址(未绑定时执行)</span><br>git push origin main  <span class="hljs-comment">#将本地的提交推送到origin(远程)的main分支</span><br></code></pre></td></tr></table></figure>
+
+<h3 id="3-2-2对服务器上进行git配置，拉取仓库"><a href="#3-2-2对服务器上进行git配置，拉取仓库" class="headerlink" title="3.2.2对服务器上进行git配置，拉取仓库"></a>3.2.2对服务器上进行git配置，拉取仓库</h3><ol>
+<li>在home下创建blog_ci目录用来存放git仓库</li>
+</ol>
+<p>然后把git仓库克隆到这个位置</p>
+<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><code class="hljs bash">git <span class="hljs-built_in">clone</span> git@github.com:WjzqcA/myblog.git<br></code></pre></td></tr></table></figure>
+
+<p>首次链接会有安全提示，直接yes</p>
+<p>但是随后会提示链接不上，这是因为云服务器没有 GitHub 的 SSH key</p>
+<ol start="2">
+<li><strong>配置SSH key：</strong></li>
+</ol>
+<p>在服务器上运行</p>
+<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><code class="hljs bash">ssh-keygen -t ed25519 -C <span class="hljs-string">&quot;1207447957@qq.com&quot;</span><br></code></pre></td></tr></table></figure>
+
+<p>然后一路回车，文件路径默认：&#x2F;root&#x2F;.ssh&#x2F;id_ed25519，passphrase（密码）随便留空</p>
+<ol start="3">
+<li><strong>将公钥配置到GitHub：</strong></li>
+</ol>
+<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><code class="hljs bash"><span class="hljs-built_in">cat</span> ~/.ssh/id_ed25519.pub<br></code></pre></td></tr></table></figure>
+
+<p>会显示出完整的公钥，复制下来添加到github上。</p>
+<p>找到设置，ssh and GPG keys，点击new ssh key后添加进去就行了。</p>
+<ol start="4">
+<li>测试</li>
+</ol>
+<p>回到服务器上</p>
+<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><code class="hljs bash">ssh -T git@github.com<br></code></pre></td></tr></table></figure>
+
+<p>如果显示hi！则配置成功</p>
+<p>然后接着在设定的仓库目录执行clone命令</p>
+<h3 id="3-2-3创建自动部署脚本"><a href="#3-2-3创建自动部署脚本" class="headerlink" title="3.2.3创建自动部署脚本"></a>3.2.3创建自动部署脚本</h3><p>在服务器的仓库目录home&#x2F;blog_ci里创建 deploy.sh</p>
+<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><code class="hljs bash">nano deploy.sh<br></code></pre></td></tr></table></figure>
+
+<p>写入以下内容：</p>
+<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br></pre></td><td class="code"><pre><code class="hljs bash"><span class="hljs-meta">#!/bin/bash</span><br><span class="hljs-built_in">set</span> -e<br><br><span class="hljs-comment"># 进入仓库目录</span><br><span class="hljs-built_in">cd</span> /home/blog_ci/myblog<br><br><span class="hljs-comment"># 强制同步远程 dist 分支</span><br>git fetch origin<br>git reset --hard origin/dist<br><br><span class="hljs-comment"># 直接同步 public 文件（这里 dist 分支本身就是静态文件）</span><br>rsync -av --delete ./ /var/www/myblog/<br><br><span class="hljs-built_in">echo</span> <span class="hljs-string">&quot;博客更新完成：<span class="hljs-subst">$(date)</span>&quot;</span><br></code></pre></td></tr></table></figure>
+
+<p>设置可执行权限：</p>
+<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><code class="hljs bash"><span class="hljs-built_in">chmod</span> +x deploy.sh<br></code></pre></td></tr></table></figure>
+
+<h3 id="3-2-4通过-Git-webhook-自动触发"><a href="#3-2-4通过-Git-webhook-自动触发" class="headerlink" title="3.2.4通过 Git webhook 自动触发"></a>3.2.4通过 Git webhook 自动触发</h3><p>webhook是一种<strong>自动化通知机制</strong>（也叫回调函数），让一个系统（如 GitHub）在发生特定事件时，主动向另一个系统（如你的服务器）发送 HTTP 请求，服务器的 webhook 接收器收到请求后执行 deploy.sh。</p>
+<p>当GitHub仓库发生指定事件（如代码推送、创建 Issue、合并 PR 等）时，GitHub 会自动向配置的服务器 URL 发送请求，你的服务器接收到请求后，可执行预设的操作</p>
+<ol>
+<li>在 GitHub（或其他 Git 仓库）中设置 <strong>Webhook（在仓库下的settings中）</strong></li>
+</ol>
+<ul>
+<li>Payload URL：服务器地址 + 接收端口，例如 <a target="_blank" rel="noopener" href="http://server_ip:5000/webhook">http://server_ip:5000/webhook</a></li>
+<li>Content type：application&#x2F;json</li>
+<li>Trigger：Push events</li>
+</ul>
+<ol>
+<li>在服务器上部署一个简单的 webhook 接收器</li>
+</ol>
+<ul>
+<li>创建webhook目录</li>
+</ul>
+<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><code class="hljs bash"><span class="hljs-built_in">mkdir</span> -p /home/webhook<br><span class="hljs-built_in">cd</span> /home/webhook<br></code></pre></td></tr></table></figure>
+
+<ul>
+<li>创建webhook server文件</li>
+</ul>
+<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br></pre></td><td class="code"><pre><code class="hljs bash">nano webhook.js<br>const express = require(<span class="hljs-string">&#x27;express&#x27;</span>);<br>const &#123; <span class="hljs-built_in">exec</span> &#125; = require(<span class="hljs-string">&#x27;child_process&#x27;</span>);<br>const bodyParser = require(<span class="hljs-string">&#x27;body-parser&#x27;</span>);<br><br>const app = express();<br><br>// 让 Express 能解析 JSON<br>app.use(bodyParser.json());<br><br>// GitHub Webhook 回调地址<br>app.post(<span class="hljs-string">&#x27;/webhook&#x27;</span>, (req, res) =&gt; &#123;<br>    console.log(<span class="hljs-string">&quot;收到 GitHub 推送事件&quot;</span>);<br><br>    // 这里可以校验 secret（可选）<br>    // 如果你设置了 secret，这里要对 req.headers[<span class="hljs-string">&#x27;x-hub-signature-256&#x27;</span>] 校验<br><br>    // 执行你的自动部署脚本<br>    <span class="hljs-built_in">exec</span>(<span class="hljs-string">&#x27;/home/blog_ci/deploy.sh&#x27;</span>, (error, stdout, stderr) =&gt; &#123;<br>        <span class="hljs-keyword">if</span> (error) &#123;<br>            console.error(`执行失败: <span class="hljs-variable">$&#123;stderr&#125;</span>`);<br>            <span class="hljs-built_in">return</span> res.status(500).send(<span class="hljs-string">&#x27;部署失败&#x27;</span>);<br>        &#125;<br>        console.log(stdout);<br>        res.send(<span class="hljs-string">&#x27;部署成功&#x27;</span>);<br>    &#125;);<br>&#125;);<br><br>// 监听端口（例如 6000）<br>app.listen(6000, () =&gt; &#123;<br>    console.log(<span class="hljs-string">&#x27;Webhook 服务器已启动，端口：6000&#x27;</span>);<br>&#125;);<br></code></pre></td></tr></table></figure>
+
+<p><strong>注意这里需要到服务器控制台去配置安全组，放行6000端口</strong></p>
+<ul>
+<li>启动webhook服务</li>
+</ul>
+<p>在webhook下安装express（Node.js 的一个 Web 框架）：</p>
+<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><code class="hljs bash">npm install express body-parser<br></code></pre></td></tr></table></figure>
+
+<p>启动：</p>
+<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><code class="hljs bash">node /home/webhook/webhook.js<br></code></pre></td></tr></table></figure>
+
+<p>会看到：</p>
+<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><code class="hljs bash">Webhook 服务器已启动，端口：6000<br></code></pre></td></tr></table></figure>
+
+<ul>
+<li>让webhook永远运行</li>
+</ul>
+<p>否则 SSH 断开就停止</p>
+<p>使用 <strong>pm2</strong> （是一个 <strong>Node.js 进程管理工具</strong>）管理：</p>
+<p>如果直接运行node webhook.js（启动webhook监听），只要 SSH 会话断开，程序就会停止，如果程序崩溃，也不会自动重启。</p>
+<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><code class="hljs bash">npm install -g pm2<br>pm2 start /home/webhook/webhook.js<br>pm2 save<br>pm2 startup<br></code></pre></td></tr></table></figure>
+
+<p>这样 webhook 永远运行、自动重启、断线不影响。</p>
+<p>现在就可以在本地修改博客后提交到git上，然后会直接同步到服务器中。</p>
+
+                
+              </div>
+            
+            <hr/>
+            <div>
+              <div class="post-metas my-3">
+  
+    <div class="post-meta mr-3 d-flex align-items-center">
+      <i class="iconfont icon-category"></i>
+      
+
+<span class="category-chains">
+  
+  
+    
+      <span class="category-chain">
+        
+  <a href="/categories/%E5%AE%9E%E8%B7%B5/" class="category-chain-item">实践</a>
+  
+  
+
+      </span>
+    
+  
+</span>
+
+    </div>
+  
+  
+    <div class="post-meta">
+      <i class="iconfont icon-tags"></i>
+      
+        <a href="/tags/%E4%BA%91%E6%9C%8D%E5%8A%A1%E5%99%A8/" class="print-no-link">#云服务器</a>
+      
+    </div>
+  
+</div>
+
+
+              
+  
+
+  <div class="license-box my-3">
+    <div class="license-title">
+      <div>服务器部署静态blog</div>
+      <div>http://example.com/2023/07/11/服务器部署静态blog/</div>
+    </div>
+    <div class="license-meta">
+      
+        <div class="license-meta-item">
+          <div>作者</div>
+          <div>Wjzqc</div>
+        </div>
+      
+      
+        <div class="license-meta-item license-meta-date">
+          <div>发布于</div>
+          <div>2023年7月11日</div>
+        </div>
+      
+      
+      
+        <div class="license-meta-item">
+          <div>许可协议</div>
+          <div>
+            
+              
+              
+                <a class="print-no-link" target="_blank" href="https://creativecommons.org/licenses/by/4.0/">
+                  <span class="hint--top hint--rounded" aria-label="BY - 署名">
+                    <i class="iconfont icon-cc-by"></i>
+                  </span>
+                </a>
+              
+            
+          </div>
+        </div>
+      
+    </div>
+    <div class="license-icon iconfont"></div>
+  </div>
+
+
+
+              
+                <div class="post-prevnext my-3">
+                  <article class="post-prev col-6">
+                    
+                    
+                      <a href="/2023/12/15/RCNN/" title="RCNN">
+                        <i class="iconfont icon-arrowleft"></i>
+                        <span class="hidden-mobile">RCNN</span>
+                        <span class="visible-mobile">上一篇</span>
+                      </a>
+                    
+                  </article>
+                  <article class="post-next col-6">
+                    
+                    
+                      <a href="/2023/06/09/%E6%95%B0%E6%8D%AE%E5%BA%93%E4%BC%98%E5%8C%96/" title="数据库优化">
+                        <span class="hidden-mobile">数据库优化</span>
+                        <span class="visible-mobile">下一篇</span>
+                        <i class="iconfont icon-arrowright"></i>
+                      </a>
+                    
+                  </article>
+                </div>
+              
+            </div>
+
+            
+          </article>
+        </div>
+      </div>
+    </div>
+
+    <div class="side-col d-none d-lg-block col-lg-2">
+      
+  <aside class="sidebar" style="margin-left: -1rem">
+    <div id="toc">
+  <p class="toc-header">
+    <i class="iconfont icon-list"></i>
+    <span>目录</span>
+  </p>
+  <div class="toc-body" id="toc-body"></div>
+</div>
+
+
+
+  </aside>
+
+
+    </div>
+  </div>
+</div>
+
+
+
+
+
+  
+
+
+
+  
+
+
+
+  
+
+
+
+  
+
+
+
+  
+
+
+
+
+
+
+
+    
+
+    
+      <a id="scroll-top-button" aria-label="TOP" href="#" role="button">
+        <i class="iconfont icon-arrowup" aria-hidden="true"></i>
+      </a>
+    
+
+    
+      <div class="modal fade" id="modalSearch" tabindex="-1" role="dialog" aria-labelledby="ModalLabel"
+     aria-hidden="true">
+  <div class="modal-dialog modal-dialog-scrollable modal-lg" role="document">
+    <div class="modal-content">
+      <div class="modal-header text-center">
+        <h4 class="modal-title w-100 font-weight-bold">搜索</h4>
+        <button type="button" id="local-search-close" class="close" data-dismiss="modal" aria-label="Close">
+          <span aria-hidden="true">&times;</span>
+        </button>
+      </div>
+      <div class="modal-body mx-3">
+        <div class="md-form mb-5">
+          <input type="text" id="local-search-input" class="form-control validate">
+          <label data-error="x" data-success="v" for="local-search-input">关键词</label>
+        </div>
+        <div class="list-group" id="local-search-result"></div>
+      </div>
+    </div>
+  </div>
+</div>
+
+    
+
+    
+  </main>
+
+  <footer>
+    <div class="footer-inner">
+  
+    <div class="footer-content">
+       <a href="" target="_blank" rel="nofollow noopener"><span>Zqc</span></a> <i class="iconfont icon-love"></i> <a href="" target="_blank" rel="nofollow noopener"><span>Zmx</span></a> 
+    </div>
+  
+  
+  
+</div>
+
+  </footer>
+
+  <!-- Scripts -->
+  
+  <script  src="https://lib.baomitu.com/nprogress/0.2.0/nprogress.min.js" ></script>
+  <link  rel="stylesheet" href="https://lib.baomitu.com/nprogress/0.2.0/nprogress.min.css" />
+
+  <script>
+    NProgress.configure({"showSpinner":false,"trickleSpeed":100})
+    NProgress.start()
+    window.addEventListener('load', function() {
+      NProgress.done();
+    })
+  </script>
+
+
+<script  src="https://lib.baomitu.com/jquery/3.6.4/jquery.min.js" ></script>
+<script  src="https://lib.baomitu.com/twitter-bootstrap/4.6.1/js/bootstrap.min.js" ></script>
+<script  src="/js/events.js" ></script>
+<script  src="/js/plugins.js" ></script>
+
+
+  <script  src="https://lib.baomitu.com/typed.js/2.0.12/typed.min.js" ></script>
+  <script>
+    (function (window, document) {
+      var typing = Fluid.plugins.typing;
+      var subtitle = document.getElementById('subtitle');
+      if (!subtitle || !typing) {
+        return;
+      }
+      var text = subtitle.getAttribute('data-typed-text');
+      
+        typing(text);
+      
+    })(window, document);
+  </script>
+
+
+
+
+  
+    <script  src="/js/img-lazyload.js" ></script>
+  
+
+
+
+
+  
+<script>
+  Fluid.utils.createScript('https://lib.baomitu.com/tocbot/4.20.1/tocbot.min.js', function() {
+    var toc = jQuery('#toc');
+    if (toc.length === 0 || !window.tocbot) { return; }
+    var boardCtn = jQuery('#board-ctn');
+    var boardTop = boardCtn.offset().top;
+
+    window.tocbot.init(Object.assign({
+      tocSelector     : '#toc-body',
+      contentSelector : '.markdown-body',
+      linkClass       : 'tocbot-link',
+      activeLinkClass : 'tocbot-active-link',
+      listClass       : 'tocbot-list',
+      isCollapsedClass: 'tocbot-is-collapsed',
+      collapsibleClass: 'tocbot-is-collapsible',
+      scrollSmooth    : true,
+      includeTitleTags: true,
+      headingsOffset  : -boardTop,
+    }, CONFIG.toc));
+    if (toc.find('.toc-list-item').length > 0) {
+      toc.css('visibility', 'visible');
+    }
+
+    Fluid.events.registerRefreshCallback(function() {
+      if ('tocbot' in window) {
+        tocbot.refresh();
+        var toc = jQuery('#toc');
+        if (toc.length === 0 || !tocbot) {
+          return;
+        }
+        if (toc.find('.toc-list-item').length > 0) {
+          toc.css('visibility', 'visible');
+        }
+      }
+    });
+  });
+</script>
+
+
+  <script src=https://lib.baomitu.com/clipboard.js/2.0.11/clipboard.min.js></script>
+
+  <script>Fluid.plugins.codeWidget();</script>
+
+
+  
+<script>
+  Fluid.utils.createScript('https://lib.baomitu.com/anchor-js/5.0.0/anchor.min.js', function() {
+    window.anchors.options = {
+      placement: CONFIG.anchorjs.placement,
+      visible  : CONFIG.anchorjs.visible
+    };
+    if (CONFIG.anchorjs.icon) {
+      window.anchors.options.icon = CONFIG.anchorjs.icon;
+    }
+    var el = (CONFIG.anchorjs.element || 'h1,h2,h3,h4,h5,h6').split(',');
+    var res = [];
+    for (var item of el) {
+      res.push('.markdown-body > ' + item.trim());
+    }
+    if (CONFIG.anchorjs.placement === 'left') {
+      window.anchors.options.class = 'anchorjs-link-left';
+    }
+    window.anchors.add(res.join(', '));
+
+    Fluid.events.registerRefreshCallback(function() {
+      if ('anchors' in window) {
+        anchors.removeAll();
+        var el = (CONFIG.anchorjs.element || 'h1,h2,h3,h4,h5,h6').split(',');
+        var res = [];
+        for (var item of el) {
+          res.push('.markdown-body > ' + item.trim());
+        }
+        if (CONFIG.anchorjs.placement === 'left') {
+          anchors.options.class = 'anchorjs-link-left';
+        }
+        anchors.add(res.join(', '));
+      }
+    });
+  });
+</script>
+
+
+  
+<script>
+  Fluid.utils.createScript('https://lib.baomitu.com/fancybox/3.5.7/jquery.fancybox.min.js', function() {
+    Fluid.plugins.fancyBox();
+  });
+</script>
+
+
+  <script>Fluid.plugins.imageCaption();</script>
+
+  <script  src="/js/local-search.js" ></script>
+
+
+
+
+
+<!-- 主题的启动项，将它保持在最底部 -->
+<!-- the boot of the theme, keep it at the bottom -->
+<script  src="/js/boot.js" ></script>
+
+
+  
+
+  <noscript>
+    <div class="noscript-warning">博客在允许 JavaScript 运行的环境下浏览效果更佳</div>
+  </noscript>
+</body>
+</html>

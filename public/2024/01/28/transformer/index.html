@@ -1,0 +1,744 @@
+
+
+<!DOCTYPE html>
+<html lang="zh-CN" data-default-color-scheme=auto>
+
+
+
+<head>
+  <meta charset="UTF-8">
+
+  <link rel="apple-touch-icon" sizes="76x76" href="/img/fluid.png">
+  <link rel="icon" href="/img/fluid.png">
+  
+
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=5.0, shrink-to-fit=no">
+  <meta http-equiv="x-ua-compatible" content="ie=edge">
+  
+  <meta name="theme-color" content="#2f4154">
+  <meta name="author" content="Wjzqc">
+  <meta name="keywords" content="">
+  
+    <meta name="description" content="Transformer 是一种革命性的深度学习模型，2017年论文《Attention is All You Need》中提出。它通过自注意力机制并行处理序列，取代传统循环神经网络。利用查询、键、值向量捕捉 token 间关系，Transformer 在翻译、文本生成及视觉中表现出色。">
+<meta property="og:type" content="article">
+<meta property="og:title" content="transformer">
+<meta property="og:url" content="http://example.com/2024/01/28/transformer/index.html">
+<meta property="og:site_name" content="Wjzqc&#39;s Blog">
+<meta property="og:description" content="Transformer 是一种革命性的深度学习模型，2017年论文《Attention is All You Need》中提出。它通过自注意力机制并行处理序列，取代传统循环神经网络。利用查询、键、值向量捕捉 token 间关系，Transformer 在翻译、文本生成及视觉中表现出色。">
+<meta property="og:locale" content="zh_CN">
+<meta property="og:image" content="http://example.com/image/transformer/img1.png">
+<meta property="og:image" content="http://example.com/image/transformer/img2.png">
+<meta property="og:image" content="http://example.com/image/transformer/img3.png">
+<meta property="og:image" content="http://example.com/image/transformer/img4.png">
+<meta property="og:image" content="http://example.com/image/transformer/img5.png">
+<meta property="og:image" content="http://example.com/image/transformer/img6.png">
+<meta property="og:image" content="http://example.com/image/transformer/img7.png">
+<meta property="og:image" content="http://example.com/image/transformer/img8.png">
+<meta property="og:image" content="http://example.com/image/transformer/img9.png">
+<meta property="og:image" content="http://example.com/image/transformer/img10.png">
+<meta property="og:image" content="http://example.com/image/transformer/img11.png">
+<meta property="og:image" content="http://example.com/image/transformer/img12.png">
+<meta property="og:image" content="http://example.com/image/transformer/img13.png">
+<meta property="og:image" content="http://example.com/image/transformer/img14.png">
+<meta property="og:image" content="http://example.com/image/transformer/img15.png">
+<meta property="og:image" content="http://example.com/image/transformer/img16.png">
+<meta property="og:image" content="http://example.com/image/transformer/img17.png">
+<meta property="og:image" content="http://example.com/image/transformer/img18.png">
+<meta property="og:image" content="http://example.com/image/transformer/img19.png">
+<meta property="og:image" content="http://example.com/image/transformer/img20.png">
+<meta property="og:image" content="http://example.com/image/transformer/img21.png">
+<meta property="og:image" content="http://example.com/image/transformer/img22.png">
+<meta property="og:image" content="http://example.com/image/transformer/img23.png">
+<meta property="og:image" content="http://example.com/image/transformer/img24.png">
+<meta property="article:published_time" content="2024-01-28T06:52:23.000Z">
+<meta property="article:modified_time" content="2025-09-13T07:44:12.000Z">
+<meta property="article:author" content="Wjzqc">
+<meta property="article:tag" content="Transformer">
+<meta property="article:tag" content="大模型">
+<meta name="twitter:card" content="summary_large_image">
+<meta name="twitter:image" content="http://example.com/image/transformer/img1.png">
+  
+  
+  
+  <title>transformer - Wjzqc&#39;s Blog</title>
+
+  <link  rel="stylesheet" href="https://lib.baomitu.com/twitter-bootstrap/4.6.1/css/bootstrap.min.css" />
+
+
+
+  <link  rel="stylesheet" href="https://lib.baomitu.com/github-markdown-css/4.0.0/github-markdown.min.css" />
+
+  <link  rel="stylesheet" href="https://lib.baomitu.com/hint.css/2.7.0/hint.min.css" />
+
+  <link  rel="stylesheet" href="https://lib.baomitu.com/fancybox/3.5.7/jquery.fancybox.min.css" />
+
+
+
+<!-- 主题依赖的图标库，不要自行修改 -->
+<!-- Do not modify the link that theme dependent icons -->
+
+<link rel="stylesheet" href="//at.alicdn.com/t/c/font_1749284_5i9bdhy70f8.css">
+
+
+
+<link rel="stylesheet" href="//at.alicdn.com/t/c/font_1736178_k526ubmyhba.css">
+
+
+<link  rel="stylesheet" href="/css/main.css" />
+
+
+  <link id="highlight-css" rel="stylesheet" href="/css/highlight.css" />
+  
+    <link id="highlight-css-dark" rel="stylesheet" href="/css/highlight-dark.css" />
+  
+
+
+
+
+  <script id="fluid-configs">
+    var Fluid = window.Fluid || {};
+    Fluid.ctx = Object.assign({}, Fluid.ctx)
+    var CONFIG = {"hostname":"example.com","root":"/","version":"1.9.8","typing":{"enable":true,"typeSpeed":70,"cursorChar":"_","loop":false,"scope":[]},"anchorjs":{"enable":true,"element":"h1,h2,h3,h4,h5,h6","placement":"left","visible":"hover","icon":""},"progressbar":{"enable":true,"height_px":3,"color":"#29d","options":{"showSpinner":false,"trickleSpeed":100}},"code_language":{"enable":true,"default":"TEXT"},"copy_btn":true,"image_caption":{"enable":true},"image_zoom":{"enable":true,"img_url_replace":["",""]},"toc":{"enable":true,"placement":"right","headingSelector":"h1,h2,h3,h4,h5,h6","collapseDepth":0},"lazyload":{"enable":true,"loading_img":"/img/loading.gif","onlypost":false,"offset_factor":2},"web_analytics":{"enable":false,"follow_dnt":true,"baidu":null,"google":{"measurement_id":null},"tencent":{"sid":null,"cid":null},"leancloud":{"app_id":null,"app_key":null,"server_url":null,"path":"window.location.pathname","ignore_local":false},"umami":{"src":null,"website_id":null,"domains":null,"start_time":"2024-01-01T00:00:00.000Z","token":null,"api_server":null}},"search_path":"/local-search.xml","include_content_in_search":true};
+
+    if (CONFIG.web_analytics.follow_dnt) {
+      var dntVal = navigator.doNotTrack || window.doNotTrack || navigator.msDoNotTrack;
+      Fluid.ctx.dnt = dntVal && (dntVal.startsWith('1') || dntVal.startsWith('yes') || dntVal.startsWith('on'));
+    }
+  </script>
+  <script  src="/js/utils.js" ></script>
+  <script  src="/js/color-schema.js" ></script>
+  
+
+
+  
+<meta name="generator" content="Hexo 7.3.0"></head>
+
+
+<body>
+  
+
+  <header>
+    
+
+<div class="header-inner" style="height: 70vh;">
+  <nav id="navbar" class="navbar fixed-top  navbar-expand-lg navbar-dark scrolling-navbar">
+  <div class="container">
+    <a class="navbar-brand" href="/">
+      <strong>Wjzqc</strong>
+    </a>
+
+    <button id="navbar-toggler-btn" class="navbar-toggler" type="button" data-toggle="collapse"
+            data-target="#navbarSupportedContent"
+            aria-controls="navbarSupportedContent" aria-expanded="false" aria-label="Toggle navigation">
+      <div class="animated-icon"><span></span><span></span><span></span></div>
+    </button>
+
+    <!-- Collapsible content -->
+    <div class="collapse navbar-collapse" id="navbarSupportedContent">
+      <ul class="navbar-nav ml-auto text-center">
+        
+          
+          
+          
+          
+            <li class="nav-item">
+              <a class="nav-link" href="/" target="_self">
+                <i class="iconfont icon-home-fill"></i>
+                <span>首页</span>
+              </a>
+            </li>
+          
+        
+          
+          
+          
+          
+            <li class="nav-item">
+              <a class="nav-link" href="/archives/" target="_self">
+                <i class="iconfont icon-archive-fill"></i>
+                <span>归档</span>
+              </a>
+            </li>
+          
+        
+          
+          
+          
+          
+            <li class="nav-item">
+              <a class="nav-link" href="/categories/" target="_self">
+                <i class="iconfont icon-category-fill"></i>
+                <span>分类</span>
+              </a>
+            </li>
+          
+        
+          
+          
+          
+          
+            <li class="nav-item">
+              <a class="nav-link" href="/tags/" target="_self">
+                <i class="iconfont icon-tags-fill"></i>
+                <span>标签</span>
+              </a>
+            </li>
+          
+        
+          
+          
+          
+          
+            <li class="nav-item">
+              <a class="nav-link" href="/about/" target="_self">
+                <i class="iconfont icon-user-fill"></i>
+                <span>关于</span>
+              </a>
+            </li>
+          
+        
+        
+          <li class="nav-item" id="search-btn">
+            <a class="nav-link" target="_self" href="javascript:;" data-toggle="modal" data-target="#modalSearch" aria-label="Search">
+              <i class="iconfont icon-search"></i>
+            </a>
+          </li>
+          
+        
+        
+          <li class="nav-item" id="color-toggle-btn">
+            <a class="nav-link" target="_self" href="javascript:;" aria-label="Color Toggle">
+              <i class="iconfont icon-dark" id="color-toggle-icon"></i>
+            </a>
+          </li>
+        
+      </ul>
+    </div>
+  </div>
+</nav>
+
+  
+
+<div id="banner" class="banner" parallax=true
+     style="background: url('/img/default.png') no-repeat center center; background-size: cover;">
+  <div class="full-bg-img">
+    <div class="mask flex-center" style="background-color: rgba(0, 0, 0, 0.3)">
+      <div class="banner-text text-center fade-in-up">
+        <div class="h2">
+          
+            <span id="subtitle" data-typed-text="transformer"></span>
+          
+        </div>
+
+        
+          
+  <div class="mt-3">
+    
+    
+      <span class="post-meta">
+        <i class="iconfont icon-date-fill" aria-hidden="true"></i>
+        <time datetime="2024-01-28 14:52" pubdate>
+          2024年1月28日 下午
+        </time>
+      </span>
+    
+  </div>
+
+  <div class="mt-1">
+    
+      <span class="post-meta mr-2">
+        <i class="iconfont icon-chart"></i>
+        
+          2.4k 字
+        
+      </span>
+    
+
+    
+      <span class="post-meta mr-2">
+        <i class="iconfont icon-clock-fill"></i>
+        
+        
+        
+          21 分钟
+        
+      </span>
+    
+
+    
+    
+  </div>
+
+
+        
+      </div>
+
+      
+    </div>
+  </div>
+</div>
+
+</div>
+
+  </header>
+
+  <main>
+    
+      
+
+<div class="container-fluid nopadding-x">
+  <div class="row nomargin-x">
+    <div class="side-col d-none d-lg-block col-lg-2">
+      
+
+    </div>
+
+    <div class="col-lg-8 nopadding-x-md">
+      <div class="container nopadding-x-md" id="board-ctn">
+        <div id="board">
+          <article class="post-content mx-auto">
+            <h1 id="seo-header">transformer</h1>
+            
+            
+              <div class="markdown-body">
+                
+                <h1 id="Transformer-模型详解"><a href="#Transformer-模型详解" class="headerlink" title="Transformer 模型详解"></a>Transformer 模型详解</h1><h2 id="一、Self-attention"><a href="#一、Self-attention" class="headerlink" title="一、Self-attention"></a>一、Self-attention</h2><p><img src="/image/transformer/img1.png" srcset="/img/loading.gif" lazyload></p>
+<p>（每一个token生成的q(k、v)的参数是相同的，wq矩阵每一行都是相同的）对于每个输入的数据，将他们乘以矩阵三个不同的矩阵得到三个新的向量q、k、v。每个不同输入的q矩阵都是由输入向量乘以同一矩阵得来的（kv同理）。那么对于所有的输入来说，可以表示成矩阵相乘的形式。</p>
+<p><img src="/image/transformer/img2.png" srcset="/img/loading.gif" lazyload></p>
+<p>接下来计算每一个q和不同v的点乘，来获得不同输入之间的相似度。如图a11为本身的差异（比如多义词），其他为不同输入与a1的差异。</p>
+<p><img src="/image/transformer/img3.png" srcset="/img/loading.gif" lazyload></p>
+<p>因为要计算每一个a之间的相似度，所以可以写成矩阵的形式。之后再对每一列的得分进行softmax来进行分类。</p>
+<p><img src="/image/transformer/img4.png" srcset="/img/loading.gif" lazyload></p>
+<p>得到每个输入softmax处理的分数后，再将分数与v向量进行点乘得到四个向量，再将他们累加起来即得到最后的特征。</p>
+<p><img src="/image/transformer/img5.png" srcset="/img/loading.gif" lazyload></p>
+<p>整个流程只有wq、wv、wa是通过网络训练得到的。</p>
+<h2 id="二、Multi-head-Self-attention"><a href="#二、Multi-head-Self-attention" class="headerlink" title="二、Multi-head Self-attention"></a>二、Multi-head Self-attention</h2><p>多头自注意力，理解为不只有一种相关关系，表现为多个头，即将原来的qkv矩阵平分维度（如果有三个head，那么平分成3份分给每一个head）分配给各个head（可以通过乘以矩阵得到），其他的流程与原来的一样。</p>
+<p><img src="/image/transformer/img6.png" srcset="/img/loading.gif" lazyload></p>
+<p>得到每个head的bi之后，将他们进行拼接再乘以矩阵得到特征</p>
+<p><img src="/image/transformer/img7.png" srcset="/img/loading.gif" lazyload></p>
+<h2 id="三、Positional-Encoding"><a href="#三、Positional-Encoding" class="headerlink" title="三、Positional Encoding"></a>三、Positional Encoding</h2><p><img src="/image/transformer/img8.png" srcset="/img/loading.gif" lazyload></p>
+<h2 id="四、Transformer"><a href="#四、Transformer" class="headerlink" title="四、Transformer"></a>四、Transformer</h2><p><img src="/image/transformer/img9.png" srcset="/img/loading.gif" lazyload></p>
+<h3 id="4-1-整体架构"><a href="#4-1-整体架构" class="headerlink" title="4.1 整体架构"></a>4.1 整体架构</h3><p><img src="/image/transformer/img10.png" srcset="/img/loading.gif" lazyload></p>
+<p><strong>Transformer 由 Encoder 和 Decoder 两个部分组成</strong>，Encoder 和 Decoder 都包含 6 个 block（N&#x3D;6时）。Transformer 的工作流程大体如下：</p>
+<p><strong>第一步：</strong>获取输入句子的每一个单词的表示向量 <strong>X</strong>，<strong>X</strong>由单词的 Embedding（Embedding就是从原始数据提取出来的Feature） 和单词位置的 Embedding 相加得到。</p>
+<p><img src="/image/transformer/img11.png" srcset="/img/loading.gif" lazyload></p>
+<p><strong>第二步</strong>：将得到的单词表示向量矩阵 (如上图所示，每一行是一个单词的表示 x) 传入 Encoder 中，经过 6 个 Encoder block 后可以得到句子所有单词的编码信息矩阵 C，如下图。单词向量矩阵用Xnd表示， n 是句子中单词个数，d 是表示向量的维度 (论文中 d&#x3D;512)。每一个 Encoder block 输出的矩阵维度与输入完全一致。</p>
+<p><img src="/image/transformer/img12.png" srcset="/img/loading.gif" lazyload></p>
+<p><strong>第三步</strong>：(训练过程)将 Encoder 输出的编码信息矩阵 <strong>C</strong>传递到 Decoder 中，Decoder 依次会根据当前翻译过的单词 1~ i 翻译下一个单词 i+1，如下图所示。在使用的过程中，翻译到单词 i+1 的时候需要通过 <strong>Mask (掩盖)</strong> 操作遮盖住 i+1 之后的单词。</p>
+<p><img src="/image/transformer/img13.png" srcset="/img/loading.gif" lazyload></p>
+<p>上图 Decoder 接收了 Encoder 的编码矩阵 <strong>C</strong>，然后首先输入一个翻译开始符 “<Begin>“，预测第一个单词 “I”；然后输入翻译开始符 “<Begin>“ 和单词 “I”，预测单词 “have”，以此类推。这是 Transformer 使用时候的大致流程，接下来是里面各个部分的细节</p>
+<h3 id="4-2-Transformer的输入"><a href="#4-2-Transformer的输入" class="headerlink" title="4.2 Transformer的输入"></a>4.2 Transformer的输入</h3><p>Transformer 中单词的输入表示 <strong>x</strong>由<strong>单词 Embedding</strong> 和<strong>位置 Embedding</strong> （Positional Encoding）相加得到。单词的 Embedding 有很多种方式可以获取，例如可以采用 Word2Vec、Glove 等算法预训练得到，也可以在 Transformer 中训练得到。</p>
+<p>Transformer 中除了单词的 Embedding，还需要使用<strong>位置 Embedding <strong>表示单词出现在句子中的位置。</strong>因为 Transformer 不采用 RNN 的结构，而是使用全局信息，不能利用单词的顺序信息，而这部分信息对于 NLP 来说非常重要。</strong>所以 Transformer 中使用位置 Embedding 保存单词在序列中的相对或绝对位置。</p>
+<p>位置 Embedding 用 <strong>PE</strong>表示，<strong>PE</strong> 的维度与单词 Embedding 是一样的。PE 可以通过训练得到，也可以使用某种公式计算得到。在 Transformer 中采用了后者，计算公式如下：</p>
+<p><img src="/image/transformer/img14.png" srcset="/img/loading.gif" lazyload></p>
+<p>其中，pos 是词在词表中出现的位置序号，d 表示 PE的维度 (与词 Embedding 一样)，i 是维度序号。2i 和 2i+1 是交替出现的，所以图1中的结果不应该是“左边的是 sin 函数的结果，右边是 cos 函数的结果”，而是两者是交替出现的才对，类似下图2所示使用这种公式计算 PE 有以下的好处：</p>
+<ul>
+<li>使 PE 能够适应比训练集里面所有句子更长的句子，假设训练集里面最长的句子是有 20 个单词，突然来了一个长度为 21 的句子，则使用公式计算的方法可以计算出第 21 位的 Embedding。</li>
+<li>可以让模型容易地计算出相对位置，对于固定长度的间距 k，<strong>PE(pos+k)</strong> 可以用 <strong>PE(pos)</strong> 计算得到。因为 Sin(A+B) &#x3D; Sin(A)Cos(B) + Cos(A)Sin(B), Cos(A+B) &#x3D; Cos(A)Cos(B) - Sin(A)Sin(B)。</li>
+</ul>
+<p>d个位置（i的值）的PE值构成了最终的PE。</p>
+<h2 id="五、自注意力机制"><a href="#五、自注意力机制" class="headerlink" title="五、自注意力机制"></a>五、自注意力机制</h2><p><img src="/image/transformer/img15.png" srcset="/img/loading.gif" lazyload></p>
+<p>左侧为 Encoder block，右侧为 Decoder block。红色圈中的部分为 <strong>Multi-Head Attention</strong>，是由多个 <strong>Self-Attention</strong>组成的，Encoder block 包含一个 Multi-Head Attention，而 Decoder block 包含两个 Multi-Head Attention (其中有一个用到 Masked)。Multi-Head Attention 上方还包括一个 Add &amp; Norm 层，Add 表示残差连接 (Residual Connection) 用于防止网络退化，Norm 表示 Layer Normalization，用于对每一层的激活值进行归一化。</p>
+<h2 id="六、Encoder结构"><a href="#六、Encoder结构" class="headerlink" title="六、Encoder结构"></a>六、Encoder结构</h2><p><img src="/image/transformer/img16.png" srcset="/img/loading.gif" lazyload></p>
+<p>一个block由Multi-Head Attention、Add&amp;Norm和Feed Forward组成，Encoder总共有6个block堆叠而成。Feed Forward 是一个两层的全连接层，第一层的激活函数为 Relu，第二层不使用激活函数。</p>
+<p><img src="/image/transformer/img17.png" srcset="/img/loading.gif" lazyload></p>
+<p>Encoder block 接收输入矩阵X(n<em>d) ，并输出一个矩阵O(n</em>d) 。通过多个 Encoder block 叠加就可以组成 Encoder。第一个 Encoder block 的输入为句子单词的表示向量矩阵，后续 Encoder block 的输入是前一个 Encoder block 的输出，最后一个 Encoder block 输出的矩阵就是<strong>编码信息矩阵 C</strong>，这一矩阵后续会用到 Decoder 中。</p>
+<h2 id="七、Decoder结构"><a href="#七、Decoder结构" class="headerlink" title="七、Decoder结构"></a>七、Decoder结构</h2><p><img src="/image/transformer/img18.png" srcset="/img/loading.gif" lazyload></p>
+<p>上图红色部分为 Transformer 的 Decoder block 结构，与 Encoder block 相似，但是存在一些区别：</p>
+<ul>
+<li>包含两个 Multi-Head Attention 层。</li>
+<li>第一个 Multi-Head Attention 层采用了 Masked 操作。</li>
+<li>第二个 Multi-Head Attention 层的<strong>K, V</strong>矩阵使用 Encoder 的<strong>编码信息矩阵C</strong>进行计算，而<strong>Q</strong>使用上一个 Decoder block 的输出计算。</li>
+<li>最后有一个 Softmax 层计算下一个翻译单词的概率。</li>
+</ul>
+<h3 id="7-1-Masked-Multi-Head-Attention"><a href="#7-1-Masked-Multi-Head-Attention" class="headerlink" title="7.1 Masked Multi-Head Attention"></a>7.1 Masked Multi-Head Attention</h3><p>Decoder block 的第一个 Multi-Head Attention 采用了 Masked 操作，因为在翻译的过程中是顺序翻译的，即翻译完第 i 个单词，才可以翻译第 i+1 个单词。通过 Masked 操作可以防止第 i 个单词知道 i+1 个单词之后的信息。下面以 “我有一只猫” 翻译成 “I have a cat” 为例，了解一下 Masked 操作。</p>
+<p>在 Decoder 的时候，是需要根据之前的翻译，求解当前最有可能的翻译，如下图所示。首先根据输入 “<Begin>“ 预测出第一个单词为 “I”，然后根据输入 “<Begin> I” 预测下一个单词 “have”。</p>
+<p><img src="/image/transformer/img19.png" srcset="/img/loading.gif" lazyload></p>
+<p>Decoder 可以在训练的过程中使用 Teacher Forcing （就是将真实标签作为模型输入，在测试阶段没法使用）并且并行化训练，即将正确的单词序列 (<Begin> I have a cat) 和对应输出 (I have a cat <end>) 传递到 Decoder。那么在预测第 i 个输出时，就要将第 i+1 之后的单词掩盖住，<strong>注意 Mask 操作是在 Self-Attention 的 Softmax 之前使用的，下面用 0 1 2 3 4 5 分别表示 “<Begin> I have a cat <end>“。</strong></p>
+<p><strong>第一步：</strong>是** Decoder 的输入矩阵和** <strong>Mask</strong> 矩阵，输入矩阵包含 “<Begin> I have a cat” (0, 1, 2, 3, 4) 五个单词的表示向量，<strong>Mask</strong> 是一个 5×5 的矩阵。在 <strong>Mask</strong> 可以发现单词 0 只能使用单词 0 的信息，而单词 1 可以使用单词 0, 1 的信息，即只能使用之前的信息。（mask矩阵不是与输入矩阵相乘，而是与QKT进行相乘的）</p>
+<p><img src="/image/transformer/img20.png" srcset="/img/loading.gif" lazyload></p>
+<p>第二步：接下来的操作和之前的 Self-Attention 一样，通过输入矩阵X计算得到Q K V矩阵。然后计算Q和K的乘积QKT 。</p>
+<p><img src="/image/transformer/img21.png" srcset="/img/loading.gif" lazyload></p>
+<p>第三步：在得到QKT之后需要进行 Softmax，计算 attention score，我们在 Softmax 之前需要使用Mask矩阵遮挡住每一个单词之后的信息，遮挡操作如下：</p>
+<p>QKT的每一个元素表示的是第i和j个单词的相关性，所以按位与mask矩阵相乘后，第一行只会保留第一个和第一个的相关性，第二行会保留第二个单词之前的相关性，以此类推。</p>
+<p><img src="/image/transformer/img22.png" srcset="/img/loading.gif" lazyload></p>
+<p>得到 MaskQKT 之后在 MaskQKT上进行 Softmax，每一行的和都为 1。但是单词 0 在单词 1, 2, 3, 4 上的 attention score 都为 0。</p>
+<p>第五步：通过上述步骤就可以得到一个 Mask Self-Attention 的输出矩阵Zi ，然后和 Encoder 类似，通过 Multi-Head Attention 拼接多个输出Zi然后计算得到第一个 Multi-Head Attention 的输出Z，Z与输入X维度一样。</p>
+<h3 id="7-2-Multi-Head-Attention"><a href="#7-2-Multi-Head-Attention" class="headerlink" title="7.2 Multi-Head Attention"></a>7.2 Multi-Head Attention</h3><p>Decoder block 第二个 Multi-Head Attention 变化不大， 主要的区别在于其中 Self-Attention 的 <strong>K, V</strong>矩阵不是使用 上一个 Decoder block 的输出计算的，而是使用 <strong>Encoder 的编码信息矩阵 C</strong> 计算的。</p>
+<p>根据 Encoder 的输出 <strong>C</strong>计算得到 <strong>K, V</strong>，根据上一个 Decoder block 的输出 <strong>Z</strong> 计算 <strong>Q</strong> (如果是第一个 Decoder block 则使用输入矩阵 <strong>X</strong> 进行计算)，后续的计算方法与之前描述的一致。</p>
+<p>这样做的好处是在 Decoder 的时候，每一位单词都可以利用到 Encoder 所有单词的信息 (这些信息无需 <strong>Mask</strong>)。</p>
+<h3 id="7-3-Softmax-预测输出单词"><a href="#7-3-Softmax-预测输出单词" class="headerlink" title="7.3 Softmax 预测输出单词"></a>7.3 Softmax 预测输出单词</h3><p>Decoder block 最后的部分是利用 Softmax 预测下一个单词，在之前的网络层我们可以得到一个最终的输出 Z，因为 Mask 的存在，使得单词 0 的输出 Z0 只包含单词 0 的信息，如下：</p>
+<p><img src="/image/transformer/img23.png" srcset="/img/loading.gif" lazyload></p>
+<p>Softmax 根据输出矩阵的每一行预测下一个单词：</p>
+<p><img src="/image/transformer/img24.png" srcset="/img/loading.gif" lazyload></p>
+
+                
+              </div>
+            
+            <hr/>
+            <div>
+              <div class="post-metas my-3">
+  
+    <div class="post-meta mr-3 d-flex align-items-center">
+      <i class="iconfont icon-category"></i>
+      
+
+<span class="category-chains">
+  
+  
+    
+      <span class="category-chain">
+        
+  <a href="/categories/%E6%B7%B1%E5%BA%A6%E5%AD%A6%E4%B9%A0/" class="category-chain-item">深度学习</a>
+  
+  
+
+      </span>
+    
+  
+</span>
+
+    </div>
+  
+  
+    <div class="post-meta">
+      <i class="iconfont icon-tags"></i>
+      
+        <a href="/tags/Transformer/" class="print-no-link">#Transformer</a>
+      
+        <a href="/tags/%E5%A4%A7%E6%A8%A1%E5%9E%8B/" class="print-no-link">#大模型</a>
+      
+    </div>
+  
+</div>
+
+
+              
+  
+
+  <div class="license-box my-3">
+    <div class="license-title">
+      <div>transformer</div>
+      <div>http://example.com/2024/01/28/transformer/</div>
+    </div>
+    <div class="license-meta">
+      
+        <div class="license-meta-item">
+          <div>作者</div>
+          <div>Wjzqc</div>
+        </div>
+      
+      
+        <div class="license-meta-item license-meta-date">
+          <div>发布于</div>
+          <div>2024年1月28日</div>
+        </div>
+      
+      
+      
+        <div class="license-meta-item">
+          <div>许可协议</div>
+          <div>
+            
+              
+              
+                <a class="print-no-link" target="_blank" href="https://creativecommons.org/licenses/by/4.0/">
+                  <span class="hint--top hint--rounded" aria-label="BY - 署名">
+                    <i class="iconfont icon-cc-by"></i>
+                  </span>
+                </a>
+              
+            
+          </div>
+        </div>
+      
+    </div>
+    <div class="license-icon iconfont"></div>
+  </div>
+
+
+
+              
+                <div class="post-prevnext my-3">
+                  <article class="post-prev col-6">
+                    
+                    
+                      <a href="/2024/02/05/vit/" title="vit">
+                        <i class="iconfont icon-arrowleft"></i>
+                        <span class="hidden-mobile">vit</span>
+                        <span class="visible-mobile">上一篇</span>
+                      </a>
+                    
+                  </article>
+                  <article class="post-next col-6">
+                    
+                    
+                      <a href="/2024/01/20/YOLOv5/" title="YOLOv5">
+                        <span class="hidden-mobile">YOLOv5</span>
+                        <span class="visible-mobile">下一篇</span>
+                        <i class="iconfont icon-arrowright"></i>
+                      </a>
+                    
+                  </article>
+                </div>
+              
+            </div>
+
+            
+          </article>
+        </div>
+      </div>
+    </div>
+
+    <div class="side-col d-none d-lg-block col-lg-2">
+      
+  <aside class="sidebar" style="margin-left: -1rem">
+    <div id="toc">
+  <p class="toc-header">
+    <i class="iconfont icon-list"></i>
+    <span>目录</span>
+  </p>
+  <div class="toc-body" id="toc-body"></div>
+</div>
+
+
+
+  </aside>
+
+
+    </div>
+  </div>
+</div>
+
+
+
+
+
+  
+
+
+
+  
+
+
+
+  
+
+
+
+  
+
+
+
+  
+
+
+
+
+
+
+
+    
+
+    
+      <a id="scroll-top-button" aria-label="TOP" href="#" role="button">
+        <i class="iconfont icon-arrowup" aria-hidden="true"></i>
+      </a>
+    
+
+    
+      <div class="modal fade" id="modalSearch" tabindex="-1" role="dialog" aria-labelledby="ModalLabel"
+     aria-hidden="true">
+  <div class="modal-dialog modal-dialog-scrollable modal-lg" role="document">
+    <div class="modal-content">
+      <div class="modal-header text-center">
+        <h4 class="modal-title w-100 font-weight-bold">搜索</h4>
+        <button type="button" id="local-search-close" class="close" data-dismiss="modal" aria-label="Close">
+          <span aria-hidden="true">&times;</span>
+        </button>
+      </div>
+      <div class="modal-body mx-3">
+        <div class="md-form mb-5">
+          <input type="text" id="local-search-input" class="form-control validate">
+          <label data-error="x" data-success="v" for="local-search-input">关键词</label>
+        </div>
+        <div class="list-group" id="local-search-result"></div>
+      </div>
+    </div>
+  </div>
+</div>
+
+    
+
+    
+  </main>
+
+  <footer>
+    <div class="footer-inner">
+  
+    <div class="footer-content">
+       <a href="" target="_blank" rel="nofollow noopener"><span>Zqc</span></a> <i class="iconfont icon-love"></i> <a href="" target="_blank" rel="nofollow noopener"><span>Zmx</span></a> 
+    </div>
+  
+  
+  
+</div>
+
+  </footer>
+
+  <!-- Scripts -->
+  
+  <script  src="https://lib.baomitu.com/nprogress/0.2.0/nprogress.min.js" ></script>
+  <link  rel="stylesheet" href="https://lib.baomitu.com/nprogress/0.2.0/nprogress.min.css" />
+
+  <script>
+    NProgress.configure({"showSpinner":false,"trickleSpeed":100})
+    NProgress.start()
+    window.addEventListener('load', function() {
+      NProgress.done();
+    })
+  </script>
+
+
+<script  src="https://lib.baomitu.com/jquery/3.6.4/jquery.min.js" ></script>
+<script  src="https://lib.baomitu.com/twitter-bootstrap/4.6.1/js/bootstrap.min.js" ></script>
+<script  src="/js/events.js" ></script>
+<script  src="/js/plugins.js" ></script>
+
+
+  <script  src="https://lib.baomitu.com/typed.js/2.0.12/typed.min.js" ></script>
+  <script>
+    (function (window, document) {
+      var typing = Fluid.plugins.typing;
+      var subtitle = document.getElementById('subtitle');
+      if (!subtitle || !typing) {
+        return;
+      }
+      var text = subtitle.getAttribute('data-typed-text');
+      
+        typing(text);
+      
+    })(window, document);
+  </script>
+
+
+
+
+  
+    <script  src="/js/img-lazyload.js" ></script>
+  
+
+
+
+
+  
+<script>
+  Fluid.utils.createScript('https://lib.baomitu.com/tocbot/4.20.1/tocbot.min.js', function() {
+    var toc = jQuery('#toc');
+    if (toc.length === 0 || !window.tocbot) { return; }
+    var boardCtn = jQuery('#board-ctn');
+    var boardTop = boardCtn.offset().top;
+
+    window.tocbot.init(Object.assign({
+      tocSelector     : '#toc-body',
+      contentSelector : '.markdown-body',
+      linkClass       : 'tocbot-link',
+      activeLinkClass : 'tocbot-active-link',
+      listClass       : 'tocbot-list',
+      isCollapsedClass: 'tocbot-is-collapsed',
+      collapsibleClass: 'tocbot-is-collapsible',
+      scrollSmooth    : true,
+      includeTitleTags: true,
+      headingsOffset  : -boardTop,
+    }, CONFIG.toc));
+    if (toc.find('.toc-list-item').length > 0) {
+      toc.css('visibility', 'visible');
+    }
+
+    Fluid.events.registerRefreshCallback(function() {
+      if ('tocbot' in window) {
+        tocbot.refresh();
+        var toc = jQuery('#toc');
+        if (toc.length === 0 || !tocbot) {
+          return;
+        }
+        if (toc.find('.toc-list-item').length > 0) {
+          toc.css('visibility', 'visible');
+        }
+      }
+    });
+  });
+</script>
+
+
+  <script src=https://lib.baomitu.com/clipboard.js/2.0.11/clipboard.min.js></script>
+
+  <script>Fluid.plugins.codeWidget();</script>
+
+
+  
+<script>
+  Fluid.utils.createScript('https://lib.baomitu.com/anchor-js/5.0.0/anchor.min.js', function() {
+    window.anchors.options = {
+      placement: CONFIG.anchorjs.placement,
+      visible  : CONFIG.anchorjs.visible
+    };
+    if (CONFIG.anchorjs.icon) {
+      window.anchors.options.icon = CONFIG.anchorjs.icon;
+    }
+    var el = (CONFIG.anchorjs.element || 'h1,h2,h3,h4,h5,h6').split(',');
+    var res = [];
+    for (var item of el) {
+      res.push('.markdown-body > ' + item.trim());
+    }
+    if (CONFIG.anchorjs.placement === 'left') {
+      window.anchors.options.class = 'anchorjs-link-left';
+    }
+    window.anchors.add(res.join(', '));
+
+    Fluid.events.registerRefreshCallback(function() {
+      if ('anchors' in window) {
+        anchors.removeAll();
+        var el = (CONFIG.anchorjs.element || 'h1,h2,h3,h4,h5,h6').split(',');
+        var res = [];
+        for (var item of el) {
+          res.push('.markdown-body > ' + item.trim());
+        }
+        if (CONFIG.anchorjs.placement === 'left') {
+          anchors.options.class = 'anchorjs-link-left';
+        }
+        anchors.add(res.join(', '));
+      }
+    });
+  });
+</script>
+
+
+  
+<script>
+  Fluid.utils.createScript('https://lib.baomitu.com/fancybox/3.5.7/jquery.fancybox.min.js', function() {
+    Fluid.plugins.fancyBox();
+  });
+</script>
+
+
+  <script>Fluid.plugins.imageCaption();</script>
+
+  <script  src="/js/local-search.js" ></script>
+
+
+
+
+
+<!-- 主题的启动项，将它保持在最底部 -->
+<!-- the boot of the theme, keep it at the bottom -->
+<script  src="/js/boot.js" ></script>
+
+
+  
+
+  <noscript>
+    <div class="noscript-warning">博客在允许 JavaScript 运行的环境下浏览效果更佳</div>
+  </noscript>
+</body>
+</html>

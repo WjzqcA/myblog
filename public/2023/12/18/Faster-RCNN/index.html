@@ -1,0 +1,718 @@
+
+
+<!DOCTYPE html>
+<html lang="zh-CN" data-default-color-scheme=auto>
+
+
+
+<head>
+  <meta charset="UTF-8">
+
+  <link rel="apple-touch-icon" sizes="76x76" href="/img/fluid.png">
+  <link rel="icon" href="/img/fluid.png">
+  
+
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=5.0, shrink-to-fit=no">
+  <meta http-equiv="x-ua-compatible" content="ie=edge">
+  
+  <meta name="theme-color" content="#2f4154">
+  <meta name="author" content="Wjzqc">
+  <meta name="keywords" content="">
+  
+    <meta name="description" content="Faster R-CNN 通过引入 RPN 优化候选框生成，实现端到端目标检测。骨干网络提取特征图，RPN 生成候选框，ROI Pooling 缩放特征后，全连接层进行分类和边界框回归，显著提升效率和精度。">
+<meta property="og:type" content="article">
+<meta property="og:title" content="Faster-RCNN">
+<meta property="og:url" content="http://example.com/2023/12/18/Faster-RCNN/index.html">
+<meta property="og:site_name" content="Wjzqc&#39;s Blog">
+<meta property="og:description" content="Faster R-CNN 通过引入 RPN 优化候选框生成，实现端到端目标检测。骨干网络提取特征图，RPN 生成候选框，ROI Pooling 缩放特征后，全连接层进行分类和边界框回归，显著提升效率和精度。">
+<meta property="og:locale" content="zh_CN">
+<meta property="og:image" content="http://example.com/image/faster-rcnn/img1.png">
+<meta property="og:image" content="http://example.com/image/faster-rcnn/img2.png">
+<meta property="og:image" content="http://example.com/image/faster-rcnn/img3.png">
+<meta property="og:image" content="http://example.com/image/faster-rcnn/img4.png">
+<meta property="og:image" content="http://example.com/image/faster-rcnn/img5.png">
+<meta property="og:image" content="http://example.com/image/faster-rcnn/img6.png">
+<meta property="og:image" content="http://example.com/image/faster-rcnn/img7.png">
+<meta property="og:image" content="http://example.com/image/faster-rcnn/img8.png">
+<meta property="og:image" content="http://example.com/image/faster-rcnn/img9.png">
+<meta property="og:image" content="http://example.com/image/faster-rcnn/img10.png">
+<meta property="og:image" content="http://example.com/image/faster-rcnn/img11.png">
+<meta property="og:image" content="http://example.com/image/faster-rcnn/img12.png">
+<meta property="article:published_time" content="2023-12-18T04:11:56.000Z">
+<meta property="article:modified_time" content="2025-07-11T04:20:54.000Z">
+<meta property="article:author" content="Wjzqc">
+<meta property="article:tag" content="RCNN">
+<meta property="article:tag" content="目标检测">
+<meta name="twitter:card" content="summary_large_image">
+<meta name="twitter:image" content="http://example.com/image/faster-rcnn/img1.png">
+  
+  
+  
+  <title>Faster-RCNN - Wjzqc&#39;s Blog</title>
+
+  <link  rel="stylesheet" href="https://lib.baomitu.com/twitter-bootstrap/4.6.1/css/bootstrap.min.css" />
+
+
+
+  <link  rel="stylesheet" href="https://lib.baomitu.com/github-markdown-css/4.0.0/github-markdown.min.css" />
+
+  <link  rel="stylesheet" href="https://lib.baomitu.com/hint.css/2.7.0/hint.min.css" />
+
+  <link  rel="stylesheet" href="https://lib.baomitu.com/fancybox/3.5.7/jquery.fancybox.min.css" />
+
+
+
+<!-- 主题依赖的图标库，不要自行修改 -->
+<!-- Do not modify the link that theme dependent icons -->
+
+<link rel="stylesheet" href="//at.alicdn.com/t/c/font_1749284_5i9bdhy70f8.css">
+
+
+
+<link rel="stylesheet" href="//at.alicdn.com/t/c/font_1736178_k526ubmyhba.css">
+
+
+<link  rel="stylesheet" href="/css/main.css" />
+
+
+  <link id="highlight-css" rel="stylesheet" href="/css/highlight.css" />
+  
+    <link id="highlight-css-dark" rel="stylesheet" href="/css/highlight-dark.css" />
+  
+
+
+
+
+  <script id="fluid-configs">
+    var Fluid = window.Fluid || {};
+    Fluid.ctx = Object.assign({}, Fluid.ctx)
+    var CONFIG = {"hostname":"example.com","root":"/","version":"1.9.8","typing":{"enable":true,"typeSpeed":70,"cursorChar":"_","loop":false,"scope":[]},"anchorjs":{"enable":true,"element":"h1,h2,h3,h4,h5,h6","placement":"left","visible":"hover","icon":""},"progressbar":{"enable":true,"height_px":3,"color":"#29d","options":{"showSpinner":false,"trickleSpeed":100}},"code_language":{"enable":true,"default":"TEXT"},"copy_btn":true,"image_caption":{"enable":true},"image_zoom":{"enable":true,"img_url_replace":["",""]},"toc":{"enable":true,"placement":"right","headingSelector":"h1,h2,h3,h4,h5,h6","collapseDepth":0},"lazyload":{"enable":true,"loading_img":"/img/loading.gif","onlypost":false,"offset_factor":2},"web_analytics":{"enable":false,"follow_dnt":true,"baidu":null,"google":{"measurement_id":null},"tencent":{"sid":null,"cid":null},"leancloud":{"app_id":null,"app_key":null,"server_url":null,"path":"window.location.pathname","ignore_local":false},"umami":{"src":null,"website_id":null,"domains":null,"start_time":"2024-01-01T00:00:00.000Z","token":null,"api_server":null}},"search_path":"/local-search.xml","include_content_in_search":true};
+
+    if (CONFIG.web_analytics.follow_dnt) {
+      var dntVal = navigator.doNotTrack || window.doNotTrack || navigator.msDoNotTrack;
+      Fluid.ctx.dnt = dntVal && (dntVal.startsWith('1') || dntVal.startsWith('yes') || dntVal.startsWith('on'));
+    }
+  </script>
+  <script  src="/js/utils.js" ></script>
+  <script  src="/js/color-schema.js" ></script>
+  
+
+
+  
+<meta name="generator" content="Hexo 7.3.0"></head>
+
+
+<body>
+  
+
+  <header>
+    
+
+<div class="header-inner" style="height: 70vh;">
+  <nav id="navbar" class="navbar fixed-top  navbar-expand-lg navbar-dark scrolling-navbar">
+  <div class="container">
+    <a class="navbar-brand" href="/">
+      <strong>Wjzqc</strong>
+    </a>
+
+    <button id="navbar-toggler-btn" class="navbar-toggler" type="button" data-toggle="collapse"
+            data-target="#navbarSupportedContent"
+            aria-controls="navbarSupportedContent" aria-expanded="false" aria-label="Toggle navigation">
+      <div class="animated-icon"><span></span><span></span><span></span></div>
+    </button>
+
+    <!-- Collapsible content -->
+    <div class="collapse navbar-collapse" id="navbarSupportedContent">
+      <ul class="navbar-nav ml-auto text-center">
+        
+          
+          
+          
+          
+            <li class="nav-item">
+              <a class="nav-link" href="/" target="_self">
+                <i class="iconfont icon-home-fill"></i>
+                <span>首页</span>
+              </a>
+            </li>
+          
+        
+          
+          
+          
+          
+            <li class="nav-item">
+              <a class="nav-link" href="/archives/" target="_self">
+                <i class="iconfont icon-archive-fill"></i>
+                <span>归档</span>
+              </a>
+            </li>
+          
+        
+          
+          
+          
+          
+            <li class="nav-item">
+              <a class="nav-link" href="/categories/" target="_self">
+                <i class="iconfont icon-category-fill"></i>
+                <span>分类</span>
+              </a>
+            </li>
+          
+        
+          
+          
+          
+          
+            <li class="nav-item">
+              <a class="nav-link" href="/tags/" target="_self">
+                <i class="iconfont icon-tags-fill"></i>
+                <span>标签</span>
+              </a>
+            </li>
+          
+        
+          
+          
+          
+          
+            <li class="nav-item">
+              <a class="nav-link" href="/about/" target="_self">
+                <i class="iconfont icon-user-fill"></i>
+                <span>关于</span>
+              </a>
+            </li>
+          
+        
+        
+          <li class="nav-item" id="search-btn">
+            <a class="nav-link" target="_self" href="javascript:;" data-toggle="modal" data-target="#modalSearch" aria-label="Search">
+              <i class="iconfont icon-search"></i>
+            </a>
+          </li>
+          
+        
+        
+          <li class="nav-item" id="color-toggle-btn">
+            <a class="nav-link" target="_self" href="javascript:;" aria-label="Color Toggle">
+              <i class="iconfont icon-dark" id="color-toggle-icon"></i>
+            </a>
+          </li>
+        
+      </ul>
+    </div>
+  </div>
+</nav>
+
+  
+
+<div id="banner" class="banner" parallax=true
+     style="background: url('/img/default.png') no-repeat center center; background-size: cover;">
+  <div class="full-bg-img">
+    <div class="mask flex-center" style="background-color: rgba(0, 0, 0, 0.3)">
+      <div class="banner-text text-center fade-in-up">
+        <div class="h2">
+          
+            <span id="subtitle" data-typed-text="Faster-RCNN"></span>
+          
+        </div>
+
+        
+          
+  <div class="mt-3">
+    
+    
+      <span class="post-meta">
+        <i class="iconfont icon-date-fill" aria-hidden="true"></i>
+        <time datetime="2023-12-18 12:11" pubdate>
+          2023年12月18日 中午
+        </time>
+      </span>
+    
+  </div>
+
+  <div class="mt-1">
+    
+      <span class="post-meta mr-2">
+        <i class="iconfont icon-chart"></i>
+        
+          2k 字
+        
+      </span>
+    
+
+    
+      <span class="post-meta mr-2">
+        <i class="iconfont icon-clock-fill"></i>
+        
+        
+        
+          17 分钟
+        
+      </span>
+    
+
+    
+    
+  </div>
+
+
+        
+      </div>
+
+      
+    </div>
+  </div>
+</div>
+
+</div>
+
+  </header>
+
+  <main>
+    
+      
+
+<div class="container-fluid nopadding-x">
+  <div class="row nomargin-x">
+    <div class="side-col d-none d-lg-block col-lg-2">
+      
+
+    </div>
+
+    <div class="col-lg-8 nopadding-x-md">
+      <div class="container nopadding-x-md" id="board-ctn">
+        <div id="board">
+          <article class="post-content mx-auto">
+            <h1 id="seo-header">Faster-RCNN</h1>
+            
+            
+              <div class="markdown-body">
+                
+                <h1 id="Faster-R-CNN-模型详解"><a href="#Faster-R-CNN-模型详解" class="headerlink" title="Faster R-CNN 模型详解"></a>Faster R-CNN 模型详解</h1><h2 id="一、步骤模型"><a href="#一、步骤模型" class="headerlink" title="一、步骤模型"></a>一、步骤模型</h2><ol>
+<li>将图像输入网络得到相应的特征图。</li>
+<li>使用 RPN 生成候选框，将生成的候选框投影到特征图上获得相应的特征矩阵。</li>
+<li>将每个特征矩阵通过 ROI Pooling 层缩放到 7x7 大小的特征图，接着将特征图展平通过一系列全连接层得到预测结果。</li>
+</ol>
+<p>对比于 Fast R-CNN，Faster R-CNN 在边界框选取中采用了 RPN 结构。</p>
+<p><img src="/image/faster-rcnn/img1.png" srcset="/img/loading.gif" lazyload alt="Faster R-CNN 流程图"></p>
+<ol>
+<li><strong>Conv layers</strong>：作为一种 CNN 网络目标检测方法，Faster RCNN 首先使用一组基础的 conv+relu+pooling 层提取 image 的 feature maps。该 feature maps 被共享用于后续 RPN 层和全连接层。</li>
+<li><strong>Region Proposal Networks</strong>：RPN 网络用于生成 region proposals。该层通过 softmax 判断 anchors 属于 positive 或者 negative，再利用 bounding box regression 修正 anchors 获得精确的 proposals。</li>
+<li><strong>Roi Pooling</strong>：该层收集输入的 feature maps 和 proposals，综合这些信息后提取 proposal feature maps，送入后续全连接层判定目标类别。</li>
+<li><strong>Classification</strong>：利用 proposal feature maps 计算 proposal 的类别，同时再次 bounding box regression 获得检测框最终的精确位置。</li>
+</ol>
+<h2 id="二、网络结构"><a href="#二、网络结构" class="headerlink" title="二、网络结构"></a>二、网络结构</h2><p><img src="/image/faster-rcnn/img2.png" srcset="/img/loading.gif" lazyload alt="Faster R-CNN 网络结构图"></p>
+<ol>
+<li><strong>Backbone</strong>：共享基础卷积层，用于提取整张图片的特征。例如 VGG16，或 Resnet101，去除其中的全连接层，只留下卷基层，输出下采样后的特征图。</li>
+<li><strong>RPN</strong>：候选检测框生成网络（Region Proposal Networks）。</li>
+<li><strong>Roi Pooling 与分类网络</strong>：对候选检测框进行分类，并且再次微调候选框坐标（在 RPN 中，网络会根据先前人为设置的 anchor 框进行坐标调整，所以这里是第二次调整）。输出检测结果。</li>
+</ol>
+<p>第一部分 backbone 就是普通的卷积网络，输出特征图供后续两阶段共用。第三部分中的分类网络，通过两个全连接层，再通过两个姊妹全连接层（论文中用词，指相同尺寸，不共享权值的两个全连接层），分别输出坐标微调回归信息与检测框分类信息。下面重点解释 RPN 与 RoI Pooling。</p>
+<h2 id="三、Region-Proposal-Networks-RPN-用于边界框回归"><a href="#三、Region-Proposal-Networks-RPN-用于边界框回归" class="headerlink" title="三、Region Proposal Networks (RPN 用于边界框回归)"></a>三、Region Proposal Networks (RPN 用于边界框回归)</h2><p>通过滑动窗口与全连接层生成的 scores 和 coordinates 分别代表了基于当前感受野产生的 k 个候选框的正负样本分类及回归参数。</p>
+<p>论文中的 RPN 示意图：</p>
+<p><img src="/image/faster-rcnn/img3.png" srcset="/img/loading.gif" lazyload></p>
+<p>在每个中心点生成的 anchor：</p>
+<p><img src="/image/faster-rcnn/img4.png" srcset="/img/loading.gif" lazyload></p>
+<p>RPN 更清晰的示意图：</p>
+<p><img src="/image/faster-rcnn/img5.png" srcset="/img/loading.gif" lazyload></p>
+<p>第一个图中的 <strong>sliding window 就是一个 kernel size 为 3*3 的卷积层</strong>，使用滑动窗口的方法在每个窗口的中心，生成多个不同尺寸和宽高比例的 anchor（锚框，然后还得把 anchor 映射到原图上就是对应的 proposal），这些锚框作为候选的目标区域。<strong>对每个滑动窗口进行卷积得到特征，用于作为分类和回归任务的输入</strong>，再通过两个姊妹 1<em>1 的卷积层，输出两个特征图，也就是图三中的 2k scores、4k coordinates，这两个支线没有影响。*<em>但是分类和回归是与生成的锚点一一对应的，每个锚点都有一个与之关联的分类得分和边界框回归值。</em></em></p>
+<h3 id="3-1-Anchor-生成、两个特征图维度与维度解释"><a href="#3-1-Anchor-生成、两个特征图维度与维度解释" class="headerlink" title="3.1 Anchor 生成、两个特征图维度与维度解释"></a>3.1 Anchor 生成、两个特征图维度与维度解释</h3><p><strong>滑动窗口每滑动到一个位置进行卷积生成一个一维的向量（1*cnn 网络输出通道数），并在特征图上的每一个点都会生成 k 个锚点（框），计算其与 GT 之间的 IOU 损失标记为正负样本，并存储起来（当作训练样本），再分别通过两个全连接层输出 2k 维的 scores 和 4k 维的 coordinate。</strong> 对其进行假设 anchor 框个数 k&#x3D;9，RPN 的输入特征图的尺寸是 w<em>h</em>512（w, h 是特征图的宽高，假设之前的 backbone 是 VGG16，那么此特征图的通道数是 512），再经过共同的 3<em>3 卷积层，两个独立的 1</em>1 的卷积层，分别输出 w<em>h</em>18 的 scores（用于分类）与 w<em>h</em>36 的 coordinates（用于回归）。scores 通道数为 18&#x3D;9（anchor 框个数）* 2（待检测物体类别，分为前景与背景）。coordinates 通道数为 36&#x3D;9<em>4（<strong>四个坐标 dx,dy,dw,dh 回归数值，存储的是变换值</strong>）。通道，每一个通道的维度为 w</em>h。</p>
+<p><img src="/image/faster-rcnn/img6.png" srcset="/img/loading.gif" lazyload alt="特征图维度示意图"></p>
+<h3 id="3-2-Scores-分支-二分类，只用区分前景或背景"><a href="#3-2-Scores-分支-二分类，只用区分前景或背景" class="headerlink" title="3.2 Scores 分支 (二分类，只用区分前景或背景)"></a>3.2 Scores 分支 (二分类，只用区分前景或背景)</h3><p>用来判断生成的锚点是否包含物体。</p>
+<p>在经历一个 1<em>1 卷积后，会对特征图（W</em>H<em>18）进行 reshape 操作。如上图，softmax 就是要将每个点的 9 个 anchor 进行二分类（positive 和 negative），如果直接将 18 个通道的像素点输入就成 18 个类别了，所以将 (n,18,37,50) 改为 (n,2,37</em>9,50)，然后对第二维 softmax 进行二分类。如图，这样两两一组，能把每一个特征点都分成前景与背景。在这之后，再把维度改回去。</p>
+<p><img src="/image/faster-rcnn/img7.png" srcset="/img/loading.gif" lazyload alt="Scores 分支 reshape 和 softmax"></p>
+<h3 id="3-3-Anchor-回归（reg-层）"><a href="#3-3-Anchor-回归（reg-层）" class="headerlink" title="3.3 Anchor 回归（reg 层）"></a>3.3 Anchor 回归（reg 层）</h3><p>对于边界框，我们只是随机生成的（锚点），与 GT（真实目标框）会有一些差距，所以我们希望采用一种方法对生成的锚点进行微调，使得锚点和 GT 更加接近。对于窗口一般使用四维向量（x,y,w,h）表示，分别表示窗口的中心点坐标和宽高，我们的目标是寻找一种关系，使得输入原始的 anchor A 经过映射得到一个跟真实窗口 G 更接近的回归窗口 G’。</p>
+<p><img src="/image/faster-rcnn/img8.png" srcset="/img/loading.gif" lazyload alt="Anchor 回归公式 1"></p>
+<p><img src="/image/faster-rcnn/img9.png" srcset="/img/loading.gif" lazyload alt="Anchor 回归公式 2"></p>
+<p>这里的 G’ 指的是变换后的值，d(A) 指的是需要学习的参数，总共有四个参数（平移和缩放参数），Aw 和 Ah 指的是边界框的宽和高。对于平移，是使用宽和高乘上学习的参数在加上 x 和 y 的坐标得到新的中心点坐标。对于缩放使用了指数。</p>
+<p>接下来的任务是通过线性回归（reg layers 的具体操作）来获得更加接近 GT 的（x,y,w,h），将特征图上的锚点区域作为输入。同时还有训练传入 A 与 GT 之间的变换量，即（tx,ty,th,tw）（旧的变化尺度），输出是 dx(A),dy(A),dw(A),dh(A) 四个变换（新的变化尺度），目标函数可表示为：</p>
+<p><img src="/image/faster-rcnn/img10.png" srcset="/img/loading.gif" lazyload alt="回归目标函数"></p>
+<p>Φ(A) 是对应 anchor 的 feature map 组成的特征向量，W 是需要学习的参数，d(A) 是得到的预测值，* 表示 x，y，w，h，也就是每一个变换对应一个目标函数。</p>
+<p>positive anchor 与 ground truth 之间的平移量 tx，ty 与尺度因子 th，tw 计算，xa，ya，wa，ha 为存储的锚点值（锚点的坐标、长宽信息只用来求偏移和尺度，不用来当作输入，reg layers 的输入是与每个锚点相关的局部特征区域）：</p>
+<p><img src="/image/faster-rcnn/img11.png" srcset="/img/loading.gif" lazyload alt="平移量和尺度因子计算"></p>
+<p>通过梯度下降不断更新每个 Anchor 的平移量和变换尺度 (tx,ty,tw,th)，然后根据值对 anchor 进行调整。</p>
+<h3 id="3-4-Proposal-Layer"><a href="#3-4-Proposal-Layer" class="headerlink" title="3.4 Proposal Layer"></a>3.4 Proposal Layer</h3><p>Proposal Layer 负责综合所有 [dx(A),dy(A),dw(A),d(hA)] 变换量和 positive anchors，计算出精准的 proposal。Proposal Layer 有 3 个输入：positive vs negative anchors 分类器结果 rpn_cls_prob_reshape，对应的 bbox reg 的 [dx(A),dy(A),dw(A),d(hA)] 变换量 rpn_bbox_pred，以及 im_info；另外还有参数 feat_stride&#x3D;16。</p>
+<p>im_info 用来保存缩放信息，对于一副任意大小 PxQ 图像，传入 Faster RCNN 前首先 reshape 到固定的尺度 MxN，im_info&#x3D;[M, N, scale_factor] 则保存了此次缩放的所有信息。然后经过 Conv Layers，经过 4 次 pooling 变为 WxH&#x3D;(M&#x2F;16)x(N&#x2F;16) 大小，其中 feature_stride&#x3D;16 则保存了该信息，用于计算 anchor 偏移量。</p>
+<p><img src="/image/faster-rcnn/img12.png" srcset="/img/loading.gif" lazyload alt="Proposal Layer 处理流程"></p>
+<p>Proposal Layer forward 按照以下顺序依次处理：</p>
+<ol>
+<li>生成 anchors，利用 [dx(A),dy(A),dw(A),d(hA)] 对所有的 anchors 做 bbox regression 回归。</li>
+<li>按照输入的 positive softmax scores 由大到小排序 anchors，提取前 pre_nms_topN (e.g. 6000) 个 anchors，再根据对应关系提取修正位置后的 positive anchors。</li>
+<li>限定超出图像边界的 positive anchors 为图像边界，防止后续 roi pooling 时 proposal 超出图像边界。</li>
+<li>剔除尺寸非常小的 positive anchors。</li>
+<li>对剩余的 positive anchors 进行 NMS（nonmaximum suppression）。</li>
+<li>Proposal Layer 有 3 个输入：positive 和 negative anchors 分类器结果 rpn_cls_prob_reshape，对应的 bbox reg 的 (e.g. 300) 结果作为 proposal 输出。</li>
+</ol>
+
+                
+              </div>
+            
+            <hr/>
+            <div>
+              <div class="post-metas my-3">
+  
+    <div class="post-meta mr-3 d-flex align-items-center">
+      <i class="iconfont icon-category"></i>
+      
+
+<span class="category-chains">
+  
+  
+    
+      <span class="category-chain">
+        
+  <a href="/categories/%E6%B7%B1%E5%BA%A6%E5%AD%A6%E4%B9%A0/" class="category-chain-item">深度学习</a>
+  
+  
+
+      </span>
+    
+  
+</span>
+
+    </div>
+  
+  
+    <div class="post-meta">
+      <i class="iconfont icon-tags"></i>
+      
+        <a href="/tags/RCNN/" class="print-no-link">#RCNN</a>
+      
+        <a href="/tags/%E7%9B%AE%E6%A0%87%E6%A3%80%E6%B5%8B/" class="print-no-link">#目标检测</a>
+      
+    </div>
+  
+</div>
+
+
+              
+  
+
+  <div class="license-box my-3">
+    <div class="license-title">
+      <div>Faster-RCNN</div>
+      <div>http://example.com/2023/12/18/Faster-RCNN/</div>
+    </div>
+    <div class="license-meta">
+      
+        <div class="license-meta-item">
+          <div>作者</div>
+          <div>Wjzqc</div>
+        </div>
+      
+      
+        <div class="license-meta-item license-meta-date">
+          <div>发布于</div>
+          <div>2023年12月18日</div>
+        </div>
+      
+      
+      
+        <div class="license-meta-item">
+          <div>许可协议</div>
+          <div>
+            
+              
+              
+                <a class="print-no-link" target="_blank" href="https://creativecommons.org/licenses/by/4.0/">
+                  <span class="hint--top hint--rounded" aria-label="BY - 署名">
+                    <i class="iconfont icon-cc-by"></i>
+                  </span>
+                </a>
+              
+            
+          </div>
+        </div>
+      
+    </div>
+    <div class="license-icon iconfont"></div>
+  </div>
+
+
+
+              
+                <div class="post-prevnext my-3">
+                  <article class="post-prev col-6">
+                    
+                    
+                      <a href="/2023/12/22/YOLOv1/" title="YOLOv1">
+                        <i class="iconfont icon-arrowleft"></i>
+                        <span class="hidden-mobile">YOLOv1</span>
+                        <span class="visible-mobile">上一篇</span>
+                      </a>
+                    
+                  </article>
+                  <article class="post-next col-6">
+                    
+                    
+                      <a href="/2023/12/16/Fast-RCNN/" title="Fast-RCNN">
+                        <span class="hidden-mobile">Fast-RCNN</span>
+                        <span class="visible-mobile">下一篇</span>
+                        <i class="iconfont icon-arrowright"></i>
+                      </a>
+                    
+                  </article>
+                </div>
+              
+            </div>
+
+            
+          </article>
+        </div>
+      </div>
+    </div>
+
+    <div class="side-col d-none d-lg-block col-lg-2">
+      
+  <aside class="sidebar" style="margin-left: -1rem">
+    <div id="toc">
+  <p class="toc-header">
+    <i class="iconfont icon-list"></i>
+    <span>目录</span>
+  </p>
+  <div class="toc-body" id="toc-body"></div>
+</div>
+
+
+
+  </aside>
+
+
+    </div>
+  </div>
+</div>
+
+
+
+
+
+  
+
+
+
+  
+
+
+
+  
+
+
+
+  
+
+
+
+  
+
+
+
+
+
+
+
+    
+
+    
+      <a id="scroll-top-button" aria-label="TOP" href="#" role="button">
+        <i class="iconfont icon-arrowup" aria-hidden="true"></i>
+      </a>
+    
+
+    
+      <div class="modal fade" id="modalSearch" tabindex="-1" role="dialog" aria-labelledby="ModalLabel"
+     aria-hidden="true">
+  <div class="modal-dialog modal-dialog-scrollable modal-lg" role="document">
+    <div class="modal-content">
+      <div class="modal-header text-center">
+        <h4 class="modal-title w-100 font-weight-bold">搜索</h4>
+        <button type="button" id="local-search-close" class="close" data-dismiss="modal" aria-label="Close">
+          <span aria-hidden="true">&times;</span>
+        </button>
+      </div>
+      <div class="modal-body mx-3">
+        <div class="md-form mb-5">
+          <input type="text" id="local-search-input" class="form-control validate">
+          <label data-error="x" data-success="v" for="local-search-input">关键词</label>
+        </div>
+        <div class="list-group" id="local-search-result"></div>
+      </div>
+    </div>
+  </div>
+</div>
+
+    
+
+    
+  </main>
+
+  <footer>
+    <div class="footer-inner">
+  
+    <div class="footer-content">
+       <a href="" target="_blank" rel="nofollow noopener"><span>Zqc</span></a> <i class="iconfont icon-love"></i> <a href="" target="_blank" rel="nofollow noopener"><span>Zmx</span></a> 
+    </div>
+  
+  
+  
+</div>
+
+  </footer>
+
+  <!-- Scripts -->
+  
+  <script  src="https://lib.baomitu.com/nprogress/0.2.0/nprogress.min.js" ></script>
+  <link  rel="stylesheet" href="https://lib.baomitu.com/nprogress/0.2.0/nprogress.min.css" />
+
+  <script>
+    NProgress.configure({"showSpinner":false,"trickleSpeed":100})
+    NProgress.start()
+    window.addEventListener('load', function() {
+      NProgress.done();
+    })
+  </script>
+
+
+<script  src="https://lib.baomitu.com/jquery/3.6.4/jquery.min.js" ></script>
+<script  src="https://lib.baomitu.com/twitter-bootstrap/4.6.1/js/bootstrap.min.js" ></script>
+<script  src="/js/events.js" ></script>
+<script  src="/js/plugins.js" ></script>
+
+
+  <script  src="https://lib.baomitu.com/typed.js/2.0.12/typed.min.js" ></script>
+  <script>
+    (function (window, document) {
+      var typing = Fluid.plugins.typing;
+      var subtitle = document.getElementById('subtitle');
+      if (!subtitle || !typing) {
+        return;
+      }
+      var text = subtitle.getAttribute('data-typed-text');
+      
+        typing(text);
+      
+    })(window, document);
+  </script>
+
+
+
+
+  
+    <script  src="/js/img-lazyload.js" ></script>
+  
+
+
+
+
+  
+<script>
+  Fluid.utils.createScript('https://lib.baomitu.com/tocbot/4.20.1/tocbot.min.js', function() {
+    var toc = jQuery('#toc');
+    if (toc.length === 0 || !window.tocbot) { return; }
+    var boardCtn = jQuery('#board-ctn');
+    var boardTop = boardCtn.offset().top;
+
+    window.tocbot.init(Object.assign({
+      tocSelector     : '#toc-body',
+      contentSelector : '.markdown-body',
+      linkClass       : 'tocbot-link',
+      activeLinkClass : 'tocbot-active-link',
+      listClass       : 'tocbot-list',
+      isCollapsedClass: 'tocbot-is-collapsed',
+      collapsibleClass: 'tocbot-is-collapsible',
+      scrollSmooth    : true,
+      includeTitleTags: true,
+      headingsOffset  : -boardTop,
+    }, CONFIG.toc));
+    if (toc.find('.toc-list-item').length > 0) {
+      toc.css('visibility', 'visible');
+    }
+
+    Fluid.events.registerRefreshCallback(function() {
+      if ('tocbot' in window) {
+        tocbot.refresh();
+        var toc = jQuery('#toc');
+        if (toc.length === 0 || !tocbot) {
+          return;
+        }
+        if (toc.find('.toc-list-item').length > 0) {
+          toc.css('visibility', 'visible');
+        }
+      }
+    });
+  });
+</script>
+
+
+  <script src=https://lib.baomitu.com/clipboard.js/2.0.11/clipboard.min.js></script>
+
+  <script>Fluid.plugins.codeWidget();</script>
+
+
+  
+<script>
+  Fluid.utils.createScript('https://lib.baomitu.com/anchor-js/5.0.0/anchor.min.js', function() {
+    window.anchors.options = {
+      placement: CONFIG.anchorjs.placement,
+      visible  : CONFIG.anchorjs.visible
+    };
+    if (CONFIG.anchorjs.icon) {
+      window.anchors.options.icon = CONFIG.anchorjs.icon;
+    }
+    var el = (CONFIG.anchorjs.element || 'h1,h2,h3,h4,h5,h6').split(',');
+    var res = [];
+    for (var item of el) {
+      res.push('.markdown-body > ' + item.trim());
+    }
+    if (CONFIG.anchorjs.placement === 'left') {
+      window.anchors.options.class = 'anchorjs-link-left';
+    }
+    window.anchors.add(res.join(', '));
+
+    Fluid.events.registerRefreshCallback(function() {
+      if ('anchors' in window) {
+        anchors.removeAll();
+        var el = (CONFIG.anchorjs.element || 'h1,h2,h3,h4,h5,h6').split(',');
+        var res = [];
+        for (var item of el) {
+          res.push('.markdown-body > ' + item.trim());
+        }
+        if (CONFIG.anchorjs.placement === 'left') {
+          anchors.options.class = 'anchorjs-link-left';
+        }
+        anchors.add(res.join(', '));
+      }
+    });
+  });
+</script>
+
+
+  
+<script>
+  Fluid.utils.createScript('https://lib.baomitu.com/fancybox/3.5.7/jquery.fancybox.min.js', function() {
+    Fluid.plugins.fancyBox();
+  });
+</script>
+
+
+  <script>Fluid.plugins.imageCaption();</script>
+
+  <script  src="/js/local-search.js" ></script>
+
+
+
+
+
+<!-- 主题的启动项，将它保持在最底部 -->
+<!-- the boot of the theme, keep it at the bottom -->
+<script  src="/js/boot.js" ></script>
+
+
+  
+
+  <noscript>
+    <div class="noscript-warning">博客在允许 JavaScript 运行的环境下浏览效果更佳</div>
+  </noscript>
+</body>
+</html>
