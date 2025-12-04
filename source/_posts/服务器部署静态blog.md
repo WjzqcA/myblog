@@ -57,19 +57,20 @@ sudo nano /etc/nginx/sites-available/blog.zjanson.top
 server {
     listen 80;
     server_name blog.zjanson.top;
-	# 博客目录，务必写绝对路径,注意不要放到root下
-	# /home/blog_ci/myblog/public这个是后续的本地git仓库
-    root /home/blog_ci/myblog/public;  
+
+    root /home/blog_ci/myblog/public;  # 指向博客绝对路径，注意不要放到root下
+
     index index.html;
 
     location / {
-        try_files $uri $uri/ = 404;
+        try_files $uri $uri/ =404;
     }
 
-    location ~ /\\. {
+    location ~ /\. {
         deny all;
     }
 }
+
 ```
 
 如果访问站点报错，可以查看nginx的log看一下什么错误（/var/log/nginx/error.log）
