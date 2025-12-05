@@ -104,11 +104,11 @@ es打分规则：会设定相关性
 
 ### 4.1kibana客户端
 
-![image.png](/image/es/img2.png)
+![](/image/es/img2.png)
 
 使用kibana客户端操作elasticsearch，http://localhost:5601/app（启动es的同时启动kibana就可以使用）
 
-![image.png](/image/es/img3.png)
+![](/image/es/img3.png)
 
 这里的post向本地运行的 **Elasticsearch 服务发送请求**返回分词结果
 
