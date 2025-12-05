@@ -28,7 +28,7 @@
 <meta property="og:locale" content="zh_CN">
 <meta property="og:image" content="http://example.com/image/transactions/img1.png">
 <meta property="article:published_time" content="2023-05-08T07:04:12.000Z">
-<meta property="article:modified_time" content="2025-12-05T02:16:32.554Z">
+<meta property="article:modified_time" content="2025-12-05T07:58:23.922Z">
 <meta property="article:author" content="Wjzqc">
 <meta property="article:tag" content="数据库">
 <meta name="twitter:card" content="summary_large_image">
@@ -225,7 +225,7 @@
       <span class="post-meta mr-2">
         <i class="iconfont icon-chart"></i>
         
-          2.8k 字
+          3.1k 字
         
       </span>
     
@@ -236,7 +236,7 @@
         
         
         
-          24 分钟
+          27 分钟
         
       </span>
     
@@ -331,7 +331,7 @@
 <h3 id="2-不可重复读"><a href="#2-不可重复读" class="headerlink" title="2. 不可重复读"></a>2. 不可重复读</h3><p>事务 A 在同一事务中多次读取同一数据时，由于事务 B 中途修改并提交，导致 A 前后读取结果不一致。</p>
 <figure class="highlight markdown"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><code class="hljs markdown">初始余额：500 元<br>事务 A：读取余额为 500 元<br>事务 B：更新余额为 1000 元并提交<br>事务 A：再次读取余额为 1000 元（与第一次结果不同）<br></code></pre></td></tr></table></figure>
 
-<h3 id="3-幻读"><a href="#3-幻读" class="headerlink" title="3. 幻读"></a>3. 幻读</h3><p>事务 A 按条件查询数据时，事务 B 插入或删除符合条件的记录并提交，导致 A 再次查询（<strong>当前读</strong>）时结果集行数发生“幻觉”般的变化。</p>
+<h3 id="3-幻读"><a href="#3-幻读" class="headerlink" title="3. 幻读"></a>3. 幻读</h3><p>事务 A 按条件查询数据时，事务 B 插入或删除符合条件的记录并提交，导致 A 再次查询（当前读）时结果集行数发生 “幻觉” 般的变化。（新增或删除数据是幻读，在不可重复读下快照读仍然看不到新增和删除，但是更新等当前读操作是可以看到的。如果事务B当前读后提交，事务A也进行当前读并且与事务B的修改（新增或删除）数据出交集，则以后的快照读会看到这部分交集从而产生幻读）。</p>
 <figure class="highlight markdown"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><code class="hljs markdown">初始表中有 2 条订单记录<br>事务 A：查询金额 &gt; 1000 的订单（返回 2 条）<br>事务 B：插入一条金额 = 2000 的订单并提交<br>事务 A：再次查询金额 &gt; 1000 的订单（返回 3 条，新增的记录为“幻像”）<br></code></pre></td></tr></table></figure>
 
 <h2 id="四、事务隔离级别"><a href="#四、事务隔离级别" class="headerlink" title="四、事务隔离级别"></a>四、事务隔离级别</h2><p>事务隔离级别用于解决并发事务问题。以下是四种隔离级别：</p>
@@ -367,32 +367,34 @@
 <li>常见 SQL 操作：普通的 SELECT（非 for update）</li>
 <li>使用 MVCC 提供一致性视图，不直接读最新数据，而是读“我事务可见的版本”。</li>
 </ul>
-<h3 id="2-MVCC-的三个组件"><a href="#2-MVCC-的三个组件" class="headerlink" title="2. MVCC 的三个组件"></a>2. MVCC 的三个组件</h3><h4 id="Undo-Log隐藏字段"><a href="#Undo-Log隐藏字段" class="headerlink" title="Undo Log隐藏字段"></a>Undo Log隐藏字段</h4><p>每一行记录都会包含几个用户不可见的字段：</p>
+<h3 id="2-MVCC-的三个组件"><a href="#2-MVCC-的三个组件" class="headerlink" title="2. MVCC 的三个组件"></a>2. MVCC 的三个组件</h3><h4 id="隐藏字段："><a href="#隐藏字段：" class="headerlink" title="隐藏字段："></a>隐藏字段：</h4><p>每一行记录都会包含几个用户不可见的字段：</p>
 <p><strong>DB_TRX_ID</strong>：创建或者最后一次修改该记录的事务 ID。</p>
 <p><strong>DB_ROW_ID</strong>：隐藏主键。</p>
 <p><strong>DB_ROLL_ID</strong>：回滚指针（和 UNDO LOG 一起使用），指向上一次版本变化的数据信息。</p>
 <h4 id="Undo-Log：回滚日志"><a href="#Undo-Log：回滚日志" class="headerlink" title="Undo Log：回滚日志"></a>Undo Log：回滚日志</h4><p>当不同事务对同一条记录做修改的时候，会导致该记录的 undo log 形成一个线性表，也就是链表，链表的链首是最新的历史记录，而链尾是最早的历史记录。</p>
 <p><img src="/image/transactions/img1.png" srcset="/img/loading.gif" lazyload></p>
-<h4 id="Read-View：事务在进行快照读时产生的视图"><a href="#Read-View：事务在进行快照读时产生的视图" class="headerlink" title="Read View：事务在进行快照读时产生的视图"></a>Read View：事务在进行快照读时产生的视图</h4><p>Read View 是一个数据结构，用于记录某个事务开始时数据库中活跃事务的状态。它本质上是一个“快照”，帮助事务决定在 MVCC 下读取哪个版本的数据。</p>
-<p>Read View 是 MVCC 中用来判断某个数据版本（undo log 中的历史版本）是否对当前事务可见的依据。</p>
+<h4 id="Read-View：事务在进行快照读时产生的视图"><a href="#Read-View：事务在进行快照读时产生的视图" class="headerlink" title="Read View：事务在进行快照读时产生的视图"></a>Read View：事务在进行快照读时产生的视图</h4><p>ReadView 是一个数据结构，用于记录某个事务开始时数据库中活跃事务的状态（<strong>当前事务id，下一个待分配的事务 ID等</strong>），不包含业务数据。它本质上是一个“快照”，通过字段帮助活跃事务判断在 MVCC 下读取哪个版本的数据。<strong>当某一个事务要进行快照读，它会去根据本事务的Readview（第一次读数据时就会创建）判断自己要读哪一个版本（undo log 中的历史版本）的数据。每行数据在 MVCC 中都有版本信息，包括创建该版本的事务 ID（trx_id）和删除该版本的事务 ID（如果有）。</strong></p>
+<p>说一下判断版本是否可见的流程：</p>
+<ol>
+<li><strong>触发快照读，创建&#x2F;加载 ReadView</strong></li>
+<li><strong>定位行数据的最新版本：</strong>每行数据在 MVCC 中都有版本信息，包括创建该版本的事务 ID（trx_id）和删除该版本的事务 ID（如果有）等。<strong>当事务进行数据查询时，InnoDB会通过索引定位到目标读取该行的当前最新版本，并且提取trx_id和roll_ptr（回滚指针，指向undolog，也就是该行的上一个版本）</strong></li>
+<li><strong>事务读取某行数据时</strong>，会根据 ReadView 判断该行的版本是否可见：</li>
+</ol>
 <ul>
-<li><p>每行数据在 MVCC 中都有版本信息，包括创建该版本的事务 ID（trx_id）和删除该版本的事务 ID（如果有）。</p>
-</li>
-<li><p><strong>事务读取某行数据时</strong>，会根据 Read View 判断该行的版本是否可见：</p>
-<ul>
-<li>如果 trx_id &lt; m_up_limit_id，说明<strong>该版本在 Read View 创建前已提交</strong>，可见。</li>
-<li>如果 trx_id &gt;&#x3D; m_low_limit_id，说明<strong>该版本在 Read View 创建后生成</strong>，不可见。</li>
-<li>如果 m_up_limit_id &lt;&#x3D; trx_id &lt; m_low_limit_id，检查 trx_id 是否在 m_ids 中：<ul>
-<li>如果在 m_ids 中，说明该版本由活跃事务创建，不可见。</li>
-<li>如果不在 m_ids 中，说明该版本已提交，可见。</li>
+<li>如果trx_id等于m_creator_trx_id（当前事务id），说明是<strong>当前事务自己的修改，直接返回此数据</strong></li>
+<li>如果trx_id &gt;&#x3D; m_low_limit_id（不可见的最低阈值），说明<strong>该数据行被修改（写事务）是在 ReadView 创建（读事务）后</strong>，则当前事务不可见，<strong>遍历史版本继续判断</strong>。</li>
+<li>如果 trx_id &lt; m_up_limit_id，说明<strong>该版本在 Read View 创建前已提交</strong>，<strong>可见</strong>。</li>
+<li>如果m_up_limit_id &lt;&#x3D; trx_id &lt; m_low_limit_id，检查trx_id是否在m_ids中：<ul>
+<li>如果在m_ids中，说明该版本由活跃事务创建，不可见。</li>
+<li>如果不在m_ids中，说明该版本已提交，可见。</li>
 </ul>
 </li>
-<li>如果 trx_id 等于 m_creator_trx_id，说明是<strong>当前事务自己的修改，可见</strong>。</li>
 </ul>
-</li>
+<p>每一个隔离级别如何去解决出现的问题的？</p>
+<ul>
 <li><p><strong>读已提交（Read Committed）</strong>：每次快照读生成新的 Read View，可能看到其他事务提交的新数据。</p>
 </li>
-<li><p><strong>可重复读（Repeatable Read）</strong>：事务在<strong>第一次快照读时生成 Read View</strong>，整个事务期间使用同一视图（InnoDB默认本事务修改的自己永远可见），确保多次读取结果一致。（以下具体解释以下可重复读隔离下能否出现幻读）</p>
+<li><p><strong>可重复读（Repeatable Read）</strong>：事务在<strong>第一次快照读时生成 Read View</strong>，整个事务期间使用同一视图（InnoDB默认本事务修改的自己永远可见），确保多次读取结果一致。（<strong>以下具体解释以下可重复读隔离下能否出现幻读</strong>）</p>
 <ul>
 <li><p>事务A只进行快照读会出现幻读吗：不会看见，因为事务A只会看到第一次快照读生成的Read View，其他事务怎么改都不会变。</p>
 </li>
