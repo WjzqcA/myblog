@@ -28,7 +28,7 @@
 <meta property="og:locale" content="zh_CN">
 <meta property="og:image" content="http://example.com/image/transactions/img1.png">
 <meta property="article:published_time" content="2023-05-08T07:04:12.000Z">
-<meta property="article:modified_time" content="2025-12-05T07:58:23.922Z">
+<meta property="article:modified_time" content="2025-12-05T08:02:34.251Z">
 <meta property="article:author" content="Wjzqc">
 <meta property="article:tag" content="数据库">
 <meta name="twitter:card" content="summary_large_image">
@@ -401,7 +401,7 @@
 <li><p>事务A进行快照读，如果事务B新增或删除后提交，事务A当前读会产生幻读</p>
 </li>
 <li><p>事务A进行快照读，如果事务 B新增后提交，事务 A 也进行当前读并且与事务 B 的修改（新增或删除）数据<strong>出现交集</strong>，则以后的事务A快照读会看到这部分交集从而产生幻读。（特殊情况）</p>
-<figure class="highlight markdown"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><code class="hljs markdown">举例：事务A查找id大于10的数据总共3条。事务B插入数据并提交此时大于10的数据总共4条。事务A把id大于10的数据user字段进行修改。事务A再使用快照读此时会看到B插入的数据，并且已作出修改如果事务 B 当前读后提交，事务 A 也进行当前读并且与事务 B 的修改（新增或删除）数据出现交集，则以后的快照读会看到这部分交集从而产生幻读。<br>注意：如果事务B删除一条记录，事务A修改大于10的user值，在进行快照读删除的那一条记录的值不会发生变化<br></code></pre></td></tr></table></figure></li>
+<figure class="highlight markdown"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><code class="hljs markdown">举例：事务A查找id大于10的数据总共3条。事务B插入数据并提交此时大于10的数据总共4条。事务A把id大于10的数据user字段进行修<br>改。事务A再使用快照读此时会看到B插入的数据，并且已作出修改如果事务 B 当前读后提交，事务 A 也进行当前读并且与事务 B 的修<br>改（新增或删除）数据出现交集，则以后的快照读会看到这部分交集从而产生幻读。<br>注意：如果事务B删除一条记录，事务A修改大于10的user值，在进行快照读删除的那一条记录的值不会发生变化<br></code></pre></td></tr></table></figure></li>
 </ul>
 </li>
 <li><p><strong>串行化</strong></p>
