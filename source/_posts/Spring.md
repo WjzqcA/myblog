@@ -1,6 +1,6 @@
 ---
 title: Spring
-date: 2023-04-01 17:12:47
+date: 2025-06-21 17:12:47
 excerpt: 系统整理 Spring 核心技术：控制反转（IoC）与依赖注入（DI）实现低耦合设计；涵盖 XML 配置、注解开发以及 @Configuration 类替代 XML 的现代化配置方式；深入讲解 Bean 的生命周期管理、范围配置（singleton/prototype）等
 tags:
   - SSM
@@ -343,3 +343,5 @@ public class AppConfig {
 3. **配置方式不同**
    - @Component 是**自动配置**，只需在类上标注，配合 @ComponentScan 即可被 Spring 扫描到
    - @Bean 是**手动配置**，需要在配置类（标注 @Configuration）中定义方法，显式返回 Bean 实例
+
+注意被Bean标注的方法可以自动获所有得参数（组件），Spring 会自动从容器中注入匹配的参数上匹配的Bean

@@ -44,7 +44,7 @@
 <meta property="og:image" content="http://example.com/image/jvm/img15.png">
 <meta property="og:image" content="http://example.com/image/jvm/img16.png">
 <meta property="article:published_time" content="2024-06-04T12:02:46.000Z">
-<meta property="article:modified_time" content="2026-01-04T12:28:08.474Z">
+<meta property="article:modified_time" content="2026-01-04T13:51:08.379Z">
 <meta property="article:author" content="Wjzqc">
 <meta property="article:tag" content="编程语言">
 <meta name="twitter:card" content="summary_large_image">
@@ -358,7 +358,7 @@
 </tr>
 </tbody></table>
 <p>实际实现使用延迟解析策略，<strong>不提前解析所有需要的符号、数据或依赖，而是等到首次真正使用时才执行解析操作</strong>，以此减少初始化开销、提升启动速度。</p>
-<h3 id="2-1-3初始化阶段"><a href="#2-1-3初始化阶段" class="headerlink" title="2.1.3初始化阶段"></a>2.1.3初始化阶段</h3><p>初始化阶段是类加载过程中<strong>首次执行 Java 代码</strong>的阶段，它的核心是执行字节码文件中clinit部分的字节码指令（由 JVM 自动生成，程序员无法直接调用），整个流程严格遵循 “父类优先、顺序执行” 的原则。<clinit> 用来进行类初始化，也就是static修饰的。对象初始化通过<init>也就是构造方法实现。</p>
+<h3 id="2-1-3初始化阶段"><a href="#2-1-3初始化阶段" class="headerlink" title="2.1.3初始化阶段"></a>2.1.3初始化阶段</h3><p>初始化阶段是类加载过程中<strong>首次执行 Java 代码</strong>的阶段，它的核心是执行字节码文件中clinit部分的字节码指令（由 JVM 自动生成，程序员无法直接调用），整个流程严格遵循 “父类优先、顺序执行” 的原则。&lt;clinit&gt; 用来进行类初始化，其核心是处理类中 static 修饰的变量和代码块。对象初始化不在这个阶段，它通过&lt;init&gt;也就是构造方法实现。。</p>
 <p><strong>实现</strong>static 变量（类变量）、static 方法（类方法）、static 代码块和static 内部类（这些统称为静态成员）<strong>的初始化</strong>。如果没有static修饰，以下方式也会初始化：</p>
 <table>
 <thead>
