@@ -1,9 +1,9 @@
 ---
 title: SpringCloud
-date: 2026-01-29 15:25:40
+date: 2025-06-21 15:25:40
 excerpt: 对于SpringCloud框架，在https://github.com/mofan212/spring-cloud-demo项目的基础上，根据阅读中疑惑的地方进行了进一步的补充解释。
 tags:
-  - SSM
+  - 分布式
   - 开发框架
 categories : 技术
 ---
