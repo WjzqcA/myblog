@@ -66,7 +66,7 @@
 <meta property="og:image" content="http://example.com/image/SpringCloud/img38.png">
 <meta property="og:image" content="http://example.com/image/SpringCloud/img39.svg">
 <meta property="article:published_time" content="2025-06-21T07:25:40.000Z">
-<meta property="article:modified_time" content="2026-01-29T07:43:27.179Z">
+<meta property="article:modified_time" content="2026-01-30T10:56:21.318Z">
 <meta property="article:author" content="Wjzqc">
 <meta property="article:tag" content="开发框架">
 <meta property="article:tag" content="分布式">
@@ -275,7 +275,7 @@
         
         
         
-          107 分钟
+          112 分钟
         
       </span>
     
@@ -1150,6 +1150,23 @@ Blocked by Sentinel (flow limiting)
 
 <p>最后在最顶端的方法入口上使用 <code>@GlobalTransactional</code> 注解，由此开启全局事务。</p>
 <p><img src="/image/SpringCloud/img39.svg" srcset="/img/loading.gif" lazyload alt="Seata二阶提交协议"></p>
+<p>解释：</p>
+<ol>
+<li><p><strong>XID</strong>：<strong>全局事务 ID</strong>，是整个分布式事务的<strong>唯一全局标识</strong>，一个<strong>全局事务只有一个 XID</strong>，所有参与的分支事务都绑定这个 XID；<strong>Branch ID</strong>：<strong>分支事务 ID</strong>，是单个分支事务的<strong>唯一局部标识</strong>，一个全局事务下会有多个 Branch ID（有多少个分支事务就有多少个），与 XID 配合唯一标识一个分支事务。所有微服务的 undo_log 表，都有 XID 和 Branch ID。</p>
+</li>
+<li><p>在过程6中申请的是分支事务控制的数据库表中的记录，因为seata要将前后镜像数据存到自己微服务数据库的undolog表中，所以要把原库中的这个表（业务表）锁上防止其他线程修改。</p>
+</li>
+<li><p><strong>获取锁</strong>的时机是是在业务 SQL 执行后、本地事务提交前完成的。<strong>只有当全局事务彻底结束（全局提交 &#x2F; 全局回滚），或分支事务执行失败触发本地回滚</strong>时，才会释放对应的全局锁，<strong>分支事务一阶段提交后，全局锁会一直持有，不会提前释放</strong></p>
+</li>
+<li><p>Seata 的全局锁是<strong>Seata Server（TC）层面维护的、针对数据库中「具体行数据」的分布式锁</strong>，核心属性：</p>
+<p>锁的粒度：<strong>行级</strong>（和 MySQL 的行锁粒度一致，只锁被修改的那一行数据，不影响其他行，保证性能）；</p>
+<p>锁的标识：由「<strong>数据库名 + 表名 + 主键值</strong>」唯一标识（比如<code>order_db.t_order.id=100</code>），确保分布式场景下，不同微服务操作同一条数据时，锁的唯一性；（那一条数据被锁）</p>
+<p>锁的归属：全局锁绑定<strong>全局事务 XID</strong>，只有持有该 XID 的分支事务，才能操作对应数据并释放锁；（谁可以动锁定的数据）</p>
+<p>自动管理：全程由 Seata 框架（数据源代理 + TC）自动加锁、解锁，开发人员无需写任何代码。</p>
+</li>
+<li><p>如果所有分支事务全部成功则进行分支提交，否则进行分支回滚。<strong>正常回滚下，后镜像和当前数据库里的数据是完全相等的。</strong></p>
+</li>
+</ol>
 
                 
               </div>
